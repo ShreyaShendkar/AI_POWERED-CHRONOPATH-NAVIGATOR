@@ -1,0 +1,16 @@
+persona_label,route_id,avg_rating
+Heritage Scholar,route_express_1h,2.0
+Heritage Scholar,route_kolhapur_day,2.0
+Heritage Scholar,route_nature_a,2.0
+Foodie Explorer,route_fort_trail,4.0
+Foodie Explorer,route_heritage_a,3.744
+Foodie Explorer,route_peth_walk,3.681
+Nature & Adventure Walker,route_fort_trail,4.0
+Nature & Adventure Walker,route_mixed_a,3.8
+Nature & Adventure Walker,route_peth_walk,3.677
+Diligent Planner,route_food_b,3.667
+Diligent Planner,route_heritage_a,3.609
+Diligent Planner,route_peth_walk,3.585
+Casual Visitor,route_fort_trail,4.5
+Casual Visitor,route_mixed_a,4.0
+Casual Visitor,route_heritage_a,3.643

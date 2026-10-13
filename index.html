@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chronopath Navigator — High-Fidelity UX Wireframe & Interactive Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <!-- REAL MAP LIBRARY (LEAFLET: GOOGLE MAPS & SATELLITE ENGINE) -->
+  <link rel="stylesheet" href="lib/leaflet.css">
+  <link rel="stylesheet" href="style.css?v=20261012_ml">
+  <script src="lib/leaflet.js"></script>
+</head>
+<body class="theme-light">
+  <!-- MOBILE-FIRST COMPANION BAR: Multilingual Selector, Simple Mode, Account & UX Controls -->
+  <header class="mobile-companion-bar" role="toolbar" aria-label="Mobile Prototype Controls">
+    <div class="toolbar-brand">
+      <div class="brand-badge">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+        </svg>
+      </div>
+      <div>
+        <span class="brand-title">Chronopath Navigator</span>
+        <span class="brand-subtitle">Mobile Smartphone UX Prototype • Pune, MH</span>
+      </div>
+    </div>
+
+    <!-- Multilingual Language Selector (English, मराठी, हिंदी + Global Foreign Languages) -->
+    <div class="lang-selector-pill-group" role="group" aria-label="Select Language">
+      <span class="lang-globe-icon" aria-hidden="true">🌐</span>
+      <button class="lang-btn active" data-lang="en" onclick="app.setLanguage('en')">English</button>
+      <button class="lang-btn" data-lang="mr" onclick="app.setLanguage('mr')">मराठी</button>
+      <button class="lang-btn" data-lang="hi" onclick="app.setLanguage('hi')">हिंदी</button>
+      <button class="lang-btn global-more-btn" onclick="app.openLanguageModal()" title="Foreign Tourist Languages (FR, DE, ES, JA) & Universal Mode">🌐 Global (+4)</button>
+    </div>
+
+    <!-- Quick Actions: Mode, State, Account & UX Callouts -->
+    <div class="toolbar-actions">
+      <!-- First-Time vs Explorer Mode Toggle -->
+      <div class="mode-pill-toggle" title="Toggle simplified beginner view vs power-user explorer controls">
+        <button class="mode-btn active" id="btnSimpleMode" onclick="app.setPlatformComplexity('simple')">🌱 Simple</button>
+        <button class="mode-btn" id="btnExplorerMode" onclick="app.setPlatformComplexity('explorer')">⚡ Explorer</button>
+      </div>
+
+      <!-- Quick Account / Login Trigger -->
+      <button class="auth-toolbar-btn" onclick="app.navigateTo('auth')" title="User Profile / Sign In">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span id="toolbarAuthLabel">Sign In / Account</span>
+      </button>
+
+      <!-- System State Simulator (Nielsen #1, #9) -->
+      <div class="state-select-wrapper">
+        <label for="stateSelector" class="visually-hidden">Prototype State</label>
+        <select id="stateSelector" class="state-selector" title="Simulate System States (Nielsen #1, #9)">
+          <option value="normal">State: Normal</option>
+          <option value="loading">State: AI Loading</option>
+          <option value="empty">State: Zero Results</option>
+          <option value="error">State: Offline Error</option>
+        </select>
+      </div>
+
+      <!-- UX Annotations Toggle -->
+      <button id="toggleAnnotationsBtn" class="annotation-toggle-btn active" title="Toggle visible UX heuristics & journey map callouts">
+        <span class="badge-dot"></span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        <span>Annotations: <strong id="annotStatusText">ON</strong></span>
+        <span class="annot-count-badge" id="annotCountBadge">20</span>
+      </button>
+
+      <button id="viewRationaleBtn" class="rationale-cta-btn" title="View Full UX Evaluation Matrix & Heuristics Breakdown">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>UX Rationale</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN SIMULATOR CONTAINER: Wraps the device frame and responsive viewport -->
+  <main class="prototype-stage" id="prototypeStage">
+    
+    <!-- DEVICE FRAME (Simulates iPhone 390px, iPad 820px, Laptop 1440px) -->
+    <div class="device-frame device-mobile" id="deviceFrame">
+      <!-- Device Bezel Decorators (shown in Mobile/Tablet) -->
+      <div class="device-notch" aria-hidden="true">
+        <div class="notch-speaker"></div>
+        <div class="notch-camera"></div>
+      </div>
+      <div class="device-status-bar" aria-hidden="true">
+        <span class="status-time">09:41</span>
+        <div class="status-city">📍 Pune, MH</div>
+        <div class="status-icons">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="7" width="18" height="11" rx="2" ry="2"/><line x1="22" y1="11" x2="22" y2="14"/></svg>
+        </div>
+      </div>
+
+      <!-- INNER APP CONTAINER: Contains all 10 Screens and Navigation -->
+      <div class="app-viewport" id="appViewport">
+
+        <!-- GLOBAL OFFLINE / NETWORK ERROR BANNER (State Demo) -->
+        <div class="system-banner error-banner hidden" id="offlineBanner" role="alert">
+          <div class="banner-content">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path><path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+            <div>
+              <strong>Offline Mode Activated (Heuristic #9: Help Recover from Errors)</strong>
+              <p>GPS and cached historical stories for Pune are preserved offline. Real-time traffic is paused.</p>
+            </div>
+          </div>
+          <button class="banner-retry-btn" onclick="app.dismissErrorState()">Retry Connection</button>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- SCREEN 0: LOGIN & SIGN-UP / PROFILE DASHBOARD -->
+        <!-- ============================================================== -->
+        <section class="screen" id="screen-auth" aria-label="Authentication & User Profile">
+          <div class="auth-wrapper">
+            <!-- ANNOTATION 20: AUTH & ONBOARDING FREEDOM -->
+            <div class="ux-annotation-badge" data-annot-id="20">20</div>
+
+            <!-- UNLOGGED STATE: Sign In & Sign Up Form -->
+            <div id="authLoggedOutView">
+              <div class="auth-header-card attractive-heritage-hero">
+                <!-- Ambient Heritage Watermark Motif -->
+                <div class="hero-heritage-pattern" aria-hidden="true"></div>
+
+                <!-- Glowing Astrolabe Chronometer Emblem -->
+                <div class="auth-astrolabe-emblem">
+                  <div class="astrolabe-halo-glow"></div>
+                  <div class="astrolabe-outer-ring">
+                    <span class="era-tick era-top">1732</span>
+                    <span class="era-tick era-right">1818</span>
+                    <span class="era-tick era-bottom">1947</span>
+                    <span class="era-tick era-left">NOW</span>
+                  </div>
+                  <div class="astrolabe-inner-dial">
+                    <svg class="astrolabe-compass-svg" width="32" height="32" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="url(#goldGrad)" stroke-width="1.5" stroke-dasharray="2 1.5"/>
+                      <path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z" fill="url(#needleGrad)"/>
+                      <circle cx="12" cy="12" r="2.5" fill="#FFE6A8" stroke="#D97706" stroke-width="0.8"/>
+                      <defs>
+                        <linearGradient id="goldGrad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                          <stop stop-color="#FFE29F"/>
+                          <stop offset="0.5" stop-color="#F59E0B"/>
+                          <stop offset="1" stop-color="#D97706"/>
+                        </linearGradient>
+                        <linearGradient id="needleGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                          <stop stop-color="#FDE68A"/>
+                          <stop offset="0.45" stop-color="#F59E0B"/>
+                          <stop offset="0.55" stop-color="#0D9488"/>
+                          <stop offset="1" stop-color="#14B8A6"/>
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                  </div>
+                  <span class="astrolabe-sparkle-fx">✦</span>
+                </div>
+
+                <!-- Eyebrow Pill -->
+                <div class="auth-eyebrow-pill">
+                  <span class="pill-sparkle">✨</span>
+                  <span>AI TIME-TRAVEL & HERITAGE COMPANION</span>
+                </div>
+
+                <!-- Brand Title with Gold Sheen -->
+                <h1 class="auth-brand-heading">
+                  <span class="brand-title-serif">Chronopath</span>
+                  <span class="brand-title-sans">Navigator</span>
+                </h1>
+
+                <!-- Tagline -->
+                <p class="auth-brand-tagline" data-i18n="auth_tagline">
+                  Step into 300 years of living history, secret wadas & iconic Pune street food
+                </p>
+
+                <!-- 3 Heritage Capsules -->
+                <div class="auth-heritage-highlights">
+                  <div class="heritage-pill-item">
+                    <span class="h-icon">🏛️</span>
+                    <span class="h-text">Historic Wadas & Forts</span>
+                  </div>
+                  <div class="heritage-pill-item">
+                    <span class="h-icon">🎧</span>
+                    <span class="h-text">Living Audio</span>
+                  </div>
+                  <div class="heritage-pill-item">
+                    <span class="h-icon">🍲</span>
+                    <span class="h-text">Food Trails</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sign In / Sign Up Segmented Tabs -->
+              <div class="auth-tabs-row" role="tablist">
+                <button class="auth-tab-btn active" id="tabSignIn" onclick="app.switchAuthTab('signin')" role="tab" aria-selected="true" data-i18n="tab_signin">Sign In</button>
+                <button class="auth-tab-btn" id="tabSignUp" onclick="app.switchAuthTab('signup')" role="tab" aria-selected="false" data-i18n="tab_signup">Create Account</button>
+              </div>
+
+              <!-- 1-Tap Social Logins (Nielsen #7: Flexibility & Efficiency) -->
+              <div class="auth-social-group">
+                <button class="social-login-btn google-btn" onclick="app.loginWithSocial('google')">
+                  <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+                  <span data-i18n="login_google">Continue with Google</span>
+                </button>
+                <button class="social-login-btn apple-btn" onclick="app.loginWithSocial('apple')">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.62-.75 1.04-1.8 0.93-2.85-.9.04-1.99.6-2.63 1.35-.57.65-1.06 1.72-.93 2.74 1 .08 2.02-.51 2.63-1.24z"/></svg>
+                  <span data-i18n="login_apple">Continue with Apple</span>
+                </button>
+              </div>
+
+              <div class="auth-divider">
+                <span data-i18n="or_with_email">or continue with email</span>
+              </div>
+
+              <!-- Form Inputs -->
+              <form class="auth-form" id="authForm" onsubmit="event.preventDefault();">
+                <div class="input-field-group" id="groupFullName" style="display: none;">
+                  <label class="field-label" for="authFullName" data-i18n="label_name">Full Name</label>
+                  <div class="input-with-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <input type="text" id="authFullName" placeholder="e.g. Tanvi Joshi" data-i18n-ph="ph_name" autocomplete="name">
+                  </div>
+                </div>
+
+                <div class="input-field-group">
+                  <label class="field-label" for="authEmail" data-i18n="label_email">Email Address</label>
+                  <div class="input-with-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    <input type="email" id="authEmail" placeholder="you@example.com" data-i18n-ph="ph_email" autocomplete="email" required>
+                  </div>
+                </div>
+
+                <div class="input-field-group">
+                  <div class="flex-between">
+                    <label class="field-label" for="authPassword" data-i18n="label_pass">Password</label>
+                    <a href="javascript:void(0)" class="forgot-pass-link" onclick="app.showToast('Password reset link sent to registered email!')" data-i18n="forgot_pass">Forgot?</a>
+                  </div>
+                  <div class="input-with-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <input type="password" id="authPassword" placeholder="••••••••" autocomplete="current-password" required>
+                    <button type="button" class="btn-toggle-eye" onclick="app.togglePasswordVisibility('authPassword', this)" aria-label="Toggle password visibility">👁️</button>
+                  </div>
+                </div>
+
+                <!-- Preferred Language Preference Picker inside Auth -->
+                <div class="input-field-group">
+                  <label class="field-label" data-i18n="pref_lang">Preferred Language</label>
+                  <div class="auth-lang-selector-chips">
+                    <button type="button" class="lang-chip-pill active" data-lang="en" onclick="app.setLanguage('en')">English</button>
+                    <button type="button" class="lang-chip-pill" data-lang="mr" onclick="app.setLanguage('mr')">मराठी (Marathi)</button>
+                    <button type="button" class="lang-chip-pill" data-lang="hi" onclick="app.setLanguage('hi')">हिंदी (Hindi)</button>
+                  </div>
+                </div>
+
+                <div class="auth-options-row">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="authRemember" checked>
+                    <span data-i18n="remember_me">Remember me</span>
+                  </label>
+                </div>
+
+                <button type="button" class="btn-primary-teal w-full" id="btnAuthSubmit" onclick="app.handleAuthSubmit()">
+                  <span id="authSubmitText" data-i18n="btn_signin">Sign In to Chronopath</span>
+                  <span>➔</span>
+                </button>
+              </form>
+
+              <!-- Guest Access Option (Nielsen #3: User Freedom & No Mandatory Walls) -->
+              <div class="auth-guest-option">
+                <div class="guest-banner" data-i18n="guest_desc">✨ Want to explore immediately without an account?</div>
+                <button type="button" class="btn-guest-continue" onclick="app.continueAsGuest()">
+                  <span data-i18n="btn_guest">Continue as Guest (No Login Required) ➔</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- LOGGED IN USER PROFILE VIEW -->
+            <div id="authLoggedInView" style="display: none;">
+              <div class="auth-profile-card">
+                <div class="profile-header-card">
+                  <div class="profile-avatar-big" id="userAvatarBig">👤</div>
+                  <div>
+                    <h3 id="userDisplayName">Tanvi Joshi</h3>
+                    <span class="text-xs text-muted" id="userDisplayEmail">tanvi.j@example.com</span>
+                    <div class="badge-role mt-4">⭐ Level 3 Pune Explorer</div>
+                  </div>
+                </div>
+
+                <!-- User Stats Grid -->
+                <div class="profile-stats-grid">
+                  <div class="profile-stat-box">
+                    <span class="stat-number" id="statTripsCount">3</span>
+                    <span class="stat-label" data-i18n="stat_routes">Routes Taken</span>
+                  </div>
+                  <div class="profile-stat-box">
+                    <span class="stat-number" id="statStoriesCount">14</span>
+                    <span class="stat-label" data-i18n="stat_stories">Stories Heard</span>
+                  </div>
+                  <div class="profile-stat-box">
+                    <span class="stat-number" id="statBadgesCount">4</span>
+                    <span class="stat-label" data-i18n="stat_badges">Badges</span>
+                  </div>
+                </div>
+
+                <!-- Settings & Preferences List -->
+                <div class="profile-settings-list">
+                  <div class="settings-row" onclick="app.navigateTo('preferences')">
+                    <span class="settings-icon">⚙️</span>
+                    <div class="settings-content">
+                      <strong data-i18n="setting_pref">Travel & Interest Preferences</strong>
+                      <span data-i18n="setting_pref_desc">History Layer, Solo/Group, Budget</span>
+                    </div>
+                    <span class="settings-arrow">➔</span>
+                  </div>
+
+                  <div class="settings-row" onclick="app.openLanguageModal()">
+                    <span class="settings-icon">🌐</span>
+                    <div class="settings-content">
+                      <strong data-i18n="setting_lang">App Language & International Tourist Mode</strong>
+                      <div class="inline-lang-pills" onclick="event.stopPropagation();">
+                        <button class="mini-lang-pill active" data-lang="en" onclick="app.setLanguage('en')">EN</button>
+                        <button class="mini-lang-pill" data-lang="mr" onclick="app.setLanguage('mr')">मराठी</button>
+                        <button class="mini-lang-pill" data-lang="hi" onclick="app.setLanguage('hi')">हिंदी</button>
+                        <button class="mini-lang-pill" onclick="app.openLanguageModal()">🌐 +4</button>
+                      </div>
+                    </div>
+                    <span class="settings-arrow">➔</span>
+                  </div>
+
+                  <div class="settings-row" onclick="app.navigateTo('rewards')">
+                    <span class="settings-icon">🏅</span>
+                    <div class="settings-content">
+                      <strong data-i18n="setting_badges">Badges & Saved Places</strong>
+                      <span data-i18n="setting_badges_desc">View visited wadas & food spots</span>
+                    </div>
+                    <span class="settings-arrow">➔</span>
+                  </div>
+                </div>
+
+                <button type="button" class="btn-logout w-full" onclick="app.handleSignOut()" data-i18n="btn_logout">
+                  Sign Out of Account
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ============================================================== -->
+        <!-- SCREEN 1: LANDING / HOME -->
+        <!-- ============================================================== -->
+        <section class="screen active" id="screen-landing" aria-label="Landing and Discovery Screen">
+          
+          <!-- Screen Header with In-App Language Selector and Profile Avatar -->
+          <div class="app-nav-header">
+            <div class="user-location-selector">
+              <div class="pulse-pin"></div>
+              <div>
+                <span class="micro-label" data-i18n="exploring_city">EXPLORING CITY</span>
+                <div class="city-name-dropdown">
+                  <strong data-i18n="pune_city">Pune, Maharashtra</strong>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+            </div>
+            <div class="header-right-actions">
+              <!-- In-App Language Quick Switcher -->
+              <div class="in-app-lang-switcher" title="Switch Language">
+                <button class="mobile-lang-btn active" data-lang="en" onclick="app.setLanguage('en')">EN</button>
+                <button class="mobile-lang-btn" data-lang="mr" onclick="app.setLanguage('mr')">म</button>
+                <button class="mobile-lang-btn" data-lang="hi" onclick="app.setLanguage('hi')">हि</button>
+                <button class="mobile-lang-btn globe-btn" onclick="app.openLanguageModal()" title="Foreign Tourist Languages & Universal Pictorial Mode">🌐</button>
+              </div>
+              <button class="icon-circle-btn" id="btnHeaderAccount" title="My Account & Login" onclick="app.navigateTo('auth')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Hero Value Proposition Section with Real Pune Heritage Photo -->
+          <div class="hero-proposition-card photo-hero" style="background-image: linear-gradient(180deg, rgba(14, 45, 49, 0.45) 0%, rgba(10, 31, 34, 0.88) 100%), url('images/pune_heritage_hero.jpg');">
+            <!-- ANNOTATION 1: AWARENESS VALUE PROP -->
+            <div class="ux-annotation-badge" data-annot-id="1">1</div>
+            <div class="hero-badge" data-i18n="hero_badge">✨ TRAVEL WITH LIVING STORIES</div>
+            <h1 class="hero-title">The road is not just distance.<br><span class="highlight-text">It is a living story.</span></h1>
+            <p class="hero-description" data-i18n="hero_desc">
+              Discover 300-year Peshwa heritage, secret wadas, and iconic street food along your exact route — with zero advance planning.
+            </p>
+
+            <!-- 3-Step Simple Onboarding Capsule (Awareness Solution) -->
+            <div class="onboarding-pill-steps" id="onboardingCapsule">
+              <!-- ANNOTATION 2: ONBOARDING <= 3 STEPS -->
+              <div class="ux-annotation-badge" data-annot-id="2">2</div>
+              <div class="onboard-step active">
+                <span class="step-dot">1</span>
+                <span>Set Vibe</span>
+              </div>
+              <div class="onboard-divider"></div>
+              <div class="onboard-step">
+                <span class="step-dot">2</span>
+                <span>Choose Route</span>
+              </div>
+              <div class="onboard-divider"></div>
+              <div class="onboard-step">
+                <span class="step-dot">3</span>
+                <span>Listen & Wander</span>
+              </div>
+              <button class="onboard-quick-btn" onclick="app.openOnboardingModal()">Why us?</button>
+            </div>
+          </div>
+
+          <!-- FIRST-TIME USER 1-TAP QUICK-START (Radical Simplicity for Beginners) -->
+          <div class="first-time-quickstart-card" id="firstTimeQuickstart">
+            <div class="quickstart-header">
+              <span class="quickstart-icon">⚡</span>
+              <div>
+                <h3 class="quickstart-title" data-i18n="quickstart_title">First Time in Pune? 1-Tap Ready Routes</h3>
+                <p class="quickstart-subtitle" data-i18n="quickstart_sub">No complicated forms needed. Tap any vibe to start immediately:</p>
+              </div>
+            </div>
+
+            <div class="quickstart-options-grid">
+              <div class="quickstart-card" onclick="app.launchQuickTrip('heritage')">
+                <div class="quickstart-img" style="background-image: url('images/shaniwar_wada_modern.jpg');">
+                  <span class="quickstart-badge">2 Hours</span>
+                </div>
+                <div class="quickstart-body">
+                  <h4>🏛️ Top 3 Iconic Highlights</h4>
+                  <p>Shaniwar Wada ➔ Lal Mahal ➔ Kasba Ganpati</p>
+                  <span class="quickstart-cta">Start in 1 Tap ➔</span>
+                </div>
+              </div>
+
+              <div class="quickstart-card" onclick="app.launchQuickTrip('food')">
+                <div class="quickstart-img" style="background-image: url('images/puneri_misal.jpg');">
+                  <span class="quickstart-badge food">1.5 Hours</span>
+                </div>
+                <div class="quickstart-body">
+                  <h4>🍲 Famous Street Food Crawl</h4>
+                  <p>Kata Kirr Misal ➔ Chitale ➔ Sujata Mastani</p>
+                  <span class="quickstart-cta">Start in 1 Tap ➔</span>
+                </div>
+              </div>
+
+              <div class="quickstart-card" onclick="app.launchQuickTrip('scenic')">
+                <div class="quickstart-img" style="background-image: url('images/pataleshwar_cave.jpg');">
+                  <span class="quickstart-badge nature">1 Hour</span>
+                </div>
+                <div class="quickstart-body">
+                  <h4>💎 8th-Century Hidden Rock-Cut</h4>
+                  <p>Pataleshwar Monolith ➔ Shady Garden Walk</p>
+                  <span class="quickstart-cta">Start in 1 Tap ➔</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Universal Search & Craving Engine -->
+          <div class="search-engine-box">
+            <!-- ANNOTATION 3: RECOGNITION OVER RECALL SEARCH -->
+            <div class="ux-annotation-badge" data-annot-id="3">3</div>
+            <div class="search-input-group">
+              <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="landingSearchInput" class="search-input" placeholder="Search any place or craving (e.g. Shaniwar Wada, Misal, Pataleshwar...)" data-i18n-ph="search_ph" autocomplete="off">
+              <button class="clear-search-btn hidden" id="clearLandingSearch" aria-label="Clear search">✕</button>
+            </div>
+
+            <!-- Quick Intent Filter Chips -->
+            <div class="intent-chips-scroll" role="tablist" aria-label="Discovery categories">
+              <button class="intent-chip active" data-intent="all" data-i18n="chip_all">All Explorations</button>
+              <button class="intent-chip" data-intent="heritage" data-i18n="chip_heritage">🏛️ Peshwa Heritage</button>
+              <button class="intent-chip" data-intent="food" data-i18n="chip_food">🍲 Street Food Trails</button>
+              <button class="intent-chip" data-intent="nature" data-i18n="chip_nature">🌿 Tekdi Greenery</button>
+              <button class="intent-chip" data-intent="wadas" data-i18n="chip_wadas">🏰 Old Peth Wadas</button>
+            </div>
+          </div>
+
+          <!-- Call to Action: "Plan My Time" (Decision Anchor) -->
+          <div class="plan-time-cta-banner">
+            <!-- ANNOTATION 4: VISIBILITY & CONTROL (FLEXIBLE SHORTCUT) -->
+            <div class="ux-annotation-badge" data-annot-id="4">4</div>
+            <div class="cta-banner-content">
+              <div class="cta-icon-box">⏱️</div>
+              <div>
+                <h3 class="cta-heading" data-i18n="cta_heading">Want a customized plan for your hours?</h3>
+                <p class="cta-subtext" data-i18n="cta_subtext">Tell us your hours and budget — we'll calculate the route.</p>
+              </div>
+            </div>
+            <button class="btn-primary-amber" onclick="app.navigateTo('preferences')">
+              <span>Personalize</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+          </div>
+
+          <!-- Daily Living Story Highlight Card with Real Modern Fort Photo -->
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Today's Audio Story Along Route</h2>
+              <p class="section-subtitle">Real cultural narratives unlocked as you travel</p>
+            </div>
+            <span class="badge-pill-teal">4 min audio</span>
+          </div>
+
+          <div class="story-spotlight-card" onclick="app.navigateTo('place')">
+            <div class="spotlight-visual" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(18, 72, 78, 0.9) 100%), url('images/shaniwar_wada_modern.jpg');">
+              <span class="spotlight-tag">🏛️ PESHWA ERA • 1732 CE</span>
+              <div class="spotlight-audio-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>Listen Audio Preview</span>
+              </div>
+            </div>
+            <div class="spotlight-details">
+              <h3 class="spotlight-name">Why Shaniwar Wada's Dilli Darwaza Faces Delhi</h3>
+              <p class="spotlight-excerpt">
+                Bajirao I angled the primary fortress gate directly North toward Delhi as an audacious statement of Maratha empire ambition...
+              </p>
+              <div class="spotlight-footer">
+                <span class="distance-metric">📍 1.4 km from you (Shivajinagar)</span>
+                <span class="read-more-link">Explore Story & Then/Now Slider ➔</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Jump Trails Grid with High-Fidelity Food & Fort Photos -->
+          <div class="section-header mt-24">
+            <div>
+              <h2 class="section-title">Popular Curated Trails</h2>
+              <p class="section-subtitle">Zero research needed • Paced to perfection</p>
+            </div>
+            <button class="text-link-btn" onclick="app.navigateTo('routes')">View All</button>
+          </div>
+
+          <div class="trail-cards-carousel">
+            <div class="trail-card" onclick="app.navigateTo('food')">
+              <div class="trail-card-image" style="background-image: url('images/puneri_misal.jpg'); background-size: cover; background-position: center;">
+                <span class="trail-badge-amber">Food Legend</span>
+              </div>
+              <div class="trail-card-body">
+                <h4>Old Pune Misal & Bakarwadi Walk</h4>
+                <p>Kata Kirr ➔ Bedekar ➔ Chitale Bandhu</p>
+                <div class="trail-meta">
+                  <span>⏱️ 1.5 hrs</span>
+                  <span>💰 ₹180</span>
+                  <span class="relevance-tag">4.9 ★ (1.2k)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="trail-card" onclick="app.navigateTo('place')">
+              <div class="trail-card-image" style="background-image: url('images/shaniwar_wada_1780.jpg'); background-size: cover; background-position: center;">
+                <span class="trail-badge-teal">Heritage</span>
+              </div>
+              <div class="trail-card-body">
+                <h4>7 Peths & Secret Wada Balconies</h4>
+                <p>Shaniwar ➔ Nana Wada ➔ Vishrambaug</p>
+                <div class="trail-meta">
+                  <span>⏱️ 2.5 hrs</span>
+                  <span>💰 Free</span>
+                  <span class="relevance-tag">UNESCO Shortlist</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- SCREEN 2: PREFERENCES (Personalization & History Layer Toggle) -->
+        <!-- ============================================================== -->
+        <section class="screen" id="screen-preferences" aria-label="Preferences and Personalization">
+          
+          <div class="screen-top-bar">
+            <button class="back-nav-btn" onclick="app.navigateTo('landing')" aria-label="Go back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="screen-title-center">
+              <h2 class="screen-heading">Traveler Persona & Preferences</h2>
+              <span class="screen-subheading">Personalizing recommendations for Pune</span>
+            </div>
+            <button class="text-btn-reset" onclick="app.resetPreferences()" title="Reset to defaults (Heuristic #3: User Freedom)">Reset</button>
+          </div>
+
+          <!-- Travel Group Selector (Designing for all 4 Target Audiences) -->
+          <div class="pref-section-card">
+            <!-- ANNOTATION 5: TARGET AUDIENCE PERSONAS -->
+            <div class="ux-annotation-badge" data-annot-id="5">5</div>
+            <label class="pref-label">
+              <span class="label-title">Who is traveling with you?</span>
+              <span class="label-help">Adjusts pacing, safety, walking distance and food venues</span>
+            </label>
+
+            <div class="group-selector-grid" role="radiogroup" aria-label="Travel group">
+              <div class="group-card active" data-group="solo" tabindex="0" onclick="app.selectTravelGroup(this, 'solo')">
+                <span class="group-icon">🚶</span>
+                <span class="group-title">Solo</span>
+                <span class="group-desc">Introspective, audio walks, cafes</span>
+              </div>
+              <div class="group-card" data-group="couple" tabindex="0" onclick="app.selectTravelGroup(this, 'couple')">
+                <span class="group-icon">👫</span>
+                <span class="group-title">Couple</span>
+                <span class="group-desc">Sunset tekdis, scenic spots, cozy eats</span>
+              </div>
+              <div class="group-card" data-group="friends" tabindex="0" onclick="app.selectTravelGroup(this, 'friends')">
+                <span class="group-icon">👥</span>
+                <span class="group-title">Friends</span>
+                <span class="group-desc">Bustling bazaars, street food, photo ops</span>
+              </div>
+              <div class="group-card" data-group="family" tabindex="0" onclick="app.selectTravelGroup(this, 'family')">
+                <span class="group-icon">👨‍👩‍👧‍👦</span>
+                <span class="group-title">Family / Kids</span>
+                <span class="group-desc">Stroller-friendly, parks, clean facilities</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interests Chips Multi-Select -->
+          <div class="pref-section-card">
+            <!-- ANNOTATION 6: RECOGNITION OVER RECALL (CHIPS) -->
+            <div class="ux-annotation-badge" data-annot-id="6">6</div>
+            <label class="pref-label">
+              <span class="label-title">What sparks your curiosity?</span>
+              <span class="label-help">Select all that apply to tailor the storytelling</span>
+            </label>
+
+            <div class="interest-chips-grid">
+              <button type="button" class="interest-pill active" data-interest="history" onclick="app.toggleInterest(this)">
+                <span>🏛️ History & Forts</span>
+              </button>
+              <button type="button" class="interest-pill active" data-interest="food" onclick="app.toggleInterest(this)">
+                <span>🍲 Street & Heritage Food</span>
+              </button>
+              <button type="button" class="interest-pill active" data-interest="culture" onclick="app.toggleInterest(this)">
+                <span>🎨 Marathi Culture & Arts</span>
+              </button>
+              <button type="button" class="interest-pill" data-interest="nature" onclick="app.toggleInterest(this)">
+                <span>🌿 Tekdis & Greenery</span>
+              </button>
+              <button type="button" class="interest-pill" data-interest="shopping" onclick="app.toggleInterest(this)">
+                <span>🛍️ Tulsi Baug & Bazaars</span>
+              </button>
+              <button type="button" class="interest-pill active" data-interest="photography" onclick="app.toggleInterest(this)">
+                <span>📸 Photography Spots</span>
+              </button>
+              <button type="button" class="interest-pill" data-interest="entertainment" onclick="app.toggleInterest(this)">
+                <span>🎭 Theater & Baithaks</span>
+              </button>
+              <button type="button" class="interest-pill" data-interest="heritage" onclick="app.toggleInterest(this)">
+                <span>🕊️ Ancient Temples & Rock-Cuts</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Time Available & Budget Sliders -->
+          <div class="pref-section-card">
+            <!-- ANNOTATION 7: ERROR PREVENTION VIA CONSTRAINED SLIDERS -->
+            <div class="ux-annotation-badge" data-annot-id="7">7</div>
+            
+            <!-- Time Slider -->
+            <div class="slider-control-group">
+              <div class="slider-header">
+                <label for="timeSlider" class="label-title">Time Window Available</label>
+                <span class="slider-value-badge" id="timeValueBadge">3.5 Hours</span>
+              </div>
+              <input type="range" id="timeSlider" class="custom-range" min="1" max="10" step="0.5" value="3.5">
+              <div class="slider-ticks">
+                <span onclick="app.setQuickTime(1)">1h (Quick)</span>
+                <span onclick="app.setQuickTime(3)">3h (Half-Day)</span>
+                <span onclick="app.setQuickTime(6)">6h (Full Day)</span>
+                <span onclick="app.setQuickTime(10)">10h (Grand)</span>
+              </div>
+            </div>
+
+            <!-- Budget Selector with Foreign Tourist Currency Switcher -->
+            <div class="slider-control-group mt-20">
+              <div class="slider-header">
+                <label class="label-title">Budget Preference</label>
+                <span class="slider-value-badge" id="budgetValueBadge">₹ Moderate (₹500 - 1200)</span>
+              </div>
+              <div class="currency-toggle-row">
+                <span class="currency-label">🌐 Tourist Currency:</span>
+                <div class="currency-btn-group" role="radiogroup" aria-label="Select Currency">
+                  <button type="button" class="currency-btn active" data-curr="INR" onclick="app.setCurrency('INR')">₹ INR</button>
+                  <button type="button" class="currency-btn" data-curr="USD" onclick="app.setCurrency('USD')">$ USD</button>
+                  <button type="button" class="currency-btn" data-curr="EUR" onclick="app.setCurrency('EUR')">€ EUR</button>
+                </div>
+              </div>
+              <div class="budget-segmented-control" role="radiogroup">
+                <button type="button" class="budget-seg-btn" data-budget="low" onclick="app.selectBudget(this, 'low')">₹ Budget (Street & Free)</button>
+                <button type="button" class="budget-seg-btn active" data-budget="mid" onclick="app.selectBudget(this, 'mid')">₹₹ Moderate (Eats & Museums)</button>
+                <button type="button" class="budget-seg-btn" data-budget="high" onclick="app.selectBudget(this, 'high')">₹₹₹ Premium (Boutique & Cabs)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- History Layer Master Toggle (Requirement: ON by default, switchable) -->
+          <div class="pref-section-card history-toggle-highlight">
+            <!-- ANNOTATION 8: VISIBILITY & CONTROL - HISTORY LAYER TOGGLE -->
+            <div class="ux-annotation-badge" data-annot-id="8">8</div>
+            <div class="toggle-flex-row">
+              <div class="toggle-text-block">
+                <div class="toggle-headline">
+                  <span class="history-layer-icon">📜</span>
+                  <strong>Living History Layer</strong>
+                  <span class="status-chip-on" id="historyToggleText">ON (Default)</span>
+                </div>
+                <p class="toggle-subtext">
+                  Displays historical events, audio snippets, and architectural time transitions along your route. Switch off for plain transit navigation.
+                </p>
+              </div>
+              <label class="switch-toggle" aria-label="Toggle Living History Layer">
+                <input type="checkbox" id="historyLayerToggle" checked onchange="app.updateRouteMatches(true)">
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Sticky Bottom CTA for Decision (Corrected: Dynamic matching, no premature hardcoded count) -->
+          <div class="sticky-footer-action">
+            <button class="btn-primary-teal w-full" id="btnGenerateRoutes" onclick="app.navigateTo('routes')">
+              <span id="btnGenerateRoutesText">Apply Preferences & Find Routes</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+            <div class="route-match-summary" id="routeMatchSummary">
+              <span class="match-indicator-dot neutral" id="matchIndicatorDot"></span>
+              <span id="matchSummaryText">Select persona, time window & interests above to personalize</span>
+            </div>
+          </div>
+
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- SCREEN 3: ROUTE OPTIONS & REAL INTERACTIVE MAP -->
+        <!-- ============================================================== -->
+        <section class="screen" id="screen-routes" aria-label="Route Selection and Real Map Navigation">
+          
+          <div class="screen-top-bar">
+            <button class="back-nav-btn" onclick="app.navigateTo('preferences')" aria-label="Back to preferences">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="screen-title-center">
+              <div class="route-header-endpoints">
+                <span class="dot-origin"></span> Swargate ➔ <span class="dot-dest"></span> Shaniwar Wada
+              </div>
+              <span class="screen-subheading">Interactive Real Street & Satellite Map (Pune)</span>
+            </div>
+            <button class="icon-circle-btn" onclick="app.openRouteCompareModal()" title="Compare routes side-by-side (Heuristic #6: Recognition over recall)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            </button>
+          </div>
+
+          <!-- REAL INTERACTIVE LEAFLET MAP CONTAINER (GOOGLE MAPS & SATELLITE ENGINE) -->
+          <div class="real-map-wrapper">
+            <!-- ANNOTATION 9: MATCH WITH REAL WORLD (REAL MAP ENGINE) -->
+            <div class="ux-annotation-badge" data-annot-id="9">9</div>
+            
+            <div id="realRouteMap" class="real-leaflet-map" role="region" aria-label="Real Interactive Map of Pune"></div>
+
+            <!-- Map Layer Switcher Floating Pills (Street vs Satellite vs Historical) -->
+            <div class="map-layer-controls">
+              <button class="map-type-btn active" data-map-layer="street" onclick="app.switchMapTileLayer('route', 'street')">🗺️ Street</button>
+              <button class="map-type-btn" data-map-layer="satellite" onclick="app.switchMapTileLayer('route', 'satellite')">🛰️ Satellite</button>
+              <button class="map-type-btn" data-map-layer="recenter" onclick="app.recenterMap('route')" title="Recenter on Pune Route">🎯 Recenter</button>
+            </div>
+
+            <!-- Bottom Floating Legend Bar -->
+            <div class="map-floating-bar">
+              <span class="map-legend-item"><span class="legend-dot teal"></span> Heritage (Rec.)</span>
+              <span class="map-legend-item"><span class="legend-dot amber"></span> Food Trail</span>
+              <span class="map-legend-item"><span class="legend-dot gray"></span> Express</span>
+              <button class="map-compare-pill" onclick="app.openRouteCompareModal()">📊 Compare All</button>
+            </div>
+          </div>
+
+          <!-- Route Options List -->
+          <div class="routes-list-scroll">
+            
+            <!-- ROUTE 1: RECOMMENDED HERITAGE -->
+            <div class="route-card selected" data-route="heritage" onclick="app.selectRoute(this)">
+              <!-- ANNOTATION 10: DECISION PAIN POINT (METRICS & WHY THIS FITS) -->
+              <div class="ux-annotation-badge" data-annot-id="10">10</div>
+              <div class="route-card-header">
+                <div class="route-badge-recommended">★ RECOMMENDED FOR YOU</div>
+                <div class="route-time-est">26 mins <span>(4.8 km)</span></div>
+              </div>
+              <h3 class="route-title">The Peshwa Legacy & Old Bridges Trail</h3>
+              <p class="route-summary">Travels via historic Lakdi Pul, Tilak Road, and Kasba Peth with 3 narrated audio stories.</p>
+              
+              <!-- "Why This Fits You" Tag (Decision & Consideration Solution) -->
+              <div class="why-fits-tag">
+                <span class="fits-icon">🎯</span>
+                <span><strong>Why this fits you:</strong> Matches your Solo persona, History preference, and 3.5h available time without rushing.</span>
+              </div>
+
+              <div class="route-meta-strip">
+                <span class="meta-tag">🏛️ 3 Heritage Stops</span>
+                <span class="meta-tag">🎧 2 Audio Bites</span>
+                <span class="meta-tag">💰 ₹0 Extra</span>
+                <span class="meta-tag traffic-low">🟢 Smooth Traffic</span>
+              </div>
+
+              <div class="route-card-actions">
+                <button class="btn-select-route active" onclick="event.stopPropagation(); app.navigateTo('navigation')">
+                  <span>Start Navigation</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+                <button class="btn-preview-stops" onclick="event.stopPropagation(); app.navigateTo('discover')">Explore Stops</button>
+              </div>
+            </div>
+
+            <!-- ROUTE 2: FOOD-FOCUSED TRAIL -->
+            <div class="route-card" data-route="food" onclick="app.selectRoute(this)">
+              <div class="route-card-header">
+                <div class="route-badge-amber">🍲 CULINARY FOCUS</div>
+                <div class="route-time-est">34 mins <span>(5.4 km)</span></div>
+              </div>
+              <h3 class="route-title">Peth Street Food & Chai Crawl</h3>
+              <p class="route-summary">Passes through Sadashiv Peth with stops at Kata Kirr Misal and Sujata Mastani.</p>
+              
+              <div class="why-fits-tag">
+                <span class="fits-icon">🎯</span>
+                <span><strong>Why this fits you:</strong> High alignment with your vegetarian snack appetite.</span>
+              </div>
+
+              <div class="route-meta-strip">
+                <span class="meta-tag">🍲 2 Iconic Tastings</span>
+                <span class="meta-tag">💰 ₹160 Avg Spend</span>
+                <span class="meta-tag">⏱️ 15m Wait Est.</span>
+              </div>
+
+              <div class="route-card-actions">
+                <button class="btn-select-route" onclick="event.stopPropagation(); app.navigateTo('food')">
+                  <span>View Food Details</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- ROUTE 3: SCENIC RIVERWALK -->
+            <div class="route-card" data-route="scenic" onclick="app.selectRoute(this)">
+              <div class="route-card-header">
+                <div class="route-badge-green">🌿 SCENIC & CALM</div>
+                <div class="route-time-est">30 mins <span>(5.1 km)</span></div>
+              </div>
+              <h3 class="route-title">Mutha Riverbank & Riverside Road</h3>
+              <p class="route-summary">Avoids dense market honking; breezy avenue with shady banyans and temple views.</p>
+              
+              <div class="why-fits-tag">
+                <span class="fits-icon">🎯</span>
+                <span><strong>Why this fits you:</strong> Ideal for peaceful audio listening and walking.</span>
+              </div>
+
+              <div class="route-meta-strip">
+                <span class="meta-tag">🌳 Shaded Walkways</span>
+                <span class="meta-tag">🧘 Low Noise</span>
+                <span class="meta-tag">💰 Free</span>
+              </div>
+            </div>
+
+            <!-- ROUTE 4: FASTEST EXPRESS -->
+            <div class="route-card" data-route="express" onclick="app.selectRoute(this)">
+              <div class="route-card-header">
+                <div class="route-badge-gray">⚡ FASTEST TRANSIT</div>
+                <div class="route-time-est">14 mins <span>(3.9 km)</span></div>
+              </div>
+              <h3 class="route-title">Shivaji Road Direct Arterial</h3>
+              <p class="route-summary">Direct straight road. No heritage stories or food detours enabled.</p>
+              
+              <div class="route-meta-strip">
+                <span class="meta-tag">⚡ 0 Detours</span>
+                <span class="meta-tag traffic-mid">🟡 Moderate Signal Delays</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Floating Compare Button -->
+          <div class="sticky-footer-action">
+            <button class="btn-secondary-white w-full" onclick="app.openRouteCompareModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              <span>Compare All 4 Routes Side-by-Side</span>
+            </button>
+          </div>
+
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- SCREEN 4: DISCOVER NEARBY + HIDDEN GEMS -->
+        <!-- ============================================================== -->
+        <section class="screen" id="screen-discover" aria-label="Discover Nearby and Hidden Gems">
+          
+          <div class="screen-top-bar">
+            <button class="back-nav-btn" onclick="app.navigateTo('routes')" aria-label="Go back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="screen-title-center">
+              <h2 class="screen-heading">Discover Nearby & Hidden Gems</h2>
+              <span class="screen-subheading">Within 15 mins of your current trajectory</span>
+            </div>
+            <!-- Map / List Toggle (Nielsen #7: Flexibility) -->
+            <div class="view-mode-toggle" role="radiogroup" aria-label="Toggle List or Map view">
+              <button class="view-btn active" data-view="list" onclick="app.toggleDiscoverView('list')" title="List View">List</button>
+              <button class="view-btn" data-view="map" onclick="app.toggleDiscoverView('map')" title="Real Map View">Map</button>
+            </div>
+          </div>
+
+          <!-- REAL DISCOVER MAP (SHOWN WHEN 'MAP' VIEW IS TOGGLED) -->
+          <div id="discoverMapWrapper" class="hidden real-map-wrapper mb-16">
+            <div id="realDiscoverMap" class="real-leaflet-map" style="height: 320px;"></div>
+            <div class="map-layer-controls">
+              <button class="map-type-btn active" onclick="app.switchMapTileLayer('discover', 'street')">🗺️ Street</button>
+              <button class="map-type-btn" onclick="app.switchMapTileLayer('discover', 'satellite')">🛰️ Satellite</button>
+              <button class="map-type-btn" onclick="app.recenterMap('discover')">🎯 Fit All</button>
+            </div>
+          </div>
+
+          <!-- Category Filter Bar -->
+          <div class="filter-scroll-wrapper">
+            <!-- ANNOTATION 11: CONSIDERATION PAIN POINT (FILTERS & WHY IT FITS) -->
+            <div class="ux-annotation-badge" data-annot-id="11">11</div>
+            <div class="filter-chip-group">
+              <button class="filter-chip active" data-filter="all">All (14)</button>
+              <button class="filter-chip" data-filter="gem">💎 Hidden Gems (5)</button>
+              <button class="filter-chip" data-filter="history">📜 Historic Stories (6)</button>
+              <button class="filter-chip" data-filter="photo">📸 Photo Vistas (4)</button>
+              <button class="filter-chip" data-filter="food">☕ Authentic Chai (3)</button>
+            </div>
+          </div>
+
+          <!-- Search within Discover -->
+          <div class="discover-search-bar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="discoverSearchInput" placeholder="Filter hidden gems (e.g. Nana Wada, Caves...)" oninput="app.filterDiscoverList(this.value)">
+          </div>
+
+          <!-- Discover Cards Container with Real High-Resolution Photography -->
+          <div class="discover-cards-list" id="discoverCardsList">
+            
+            <!-- GEM 1: PATALESHWAR CAVE -->
+            <div class="gem-card with-photo" data-category="gem" onclick="app.navigateTo('place')">
+              <div class="gem-card-media" style="background-image: url('images/pataleshwar_cave.jpg');">
+                <span class="gem-highlight-pill">💎 SECRET MONOLITH</span>
+                <span class="gem-distance-badge">6 min walk (450m)</span>
+              </div>
+              <div class="gem-card-content">
+                <h3 class="gem-title">Pataleshwar Rock-Cut Cave Temple</h3>
+                <p class="gem-brief">Carved straight into basalt bedrock during the 8th-century Rashtrakuta Dynasty, right under modern Shivajinagar traffic.</p>
+                
+                <div class="why-fits-tag">
+                  <span class="fits-icon">🎯</span>
+                  <span><strong>Why this fits you:</strong> Perfectly cool shade for the afternoon heat, zero tourist buses, and stunning basalt photography.</span>
+                </div>
+
+                <div class="gem-meta-row">
+                  <span class="badge-tag">🏛️ Ancient (750 CE)</span>
+                  <span class="badge-tag">💰 Free Entry</span>
+                  <span class="badge-tag">🎧 3m Audio Story</span>
+                  <span class="crowd-indicator low">🟢 Very Quiet</span>
+                </div>
+
+                <div class="gem-action-row">
+                  <button class="btn-card-primary" onclick="event.stopPropagation(); app.navigateTo('place')">View Timeline & Audio</button>
+                  <button class="btn-card-secondary" onclick="event.stopPropagation(); app.addToItinerary('Pataleshwar')">+ Add Stop</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- GEM 2: NANA WADA -->
+            <div class="gem-card with-photo" data-category="gem">
+              <div class="gem-card-media" style="background-image: url('images/pune_heritage_hero.jpg');">
+                <span class="gem-highlight-pill">🏰 ARCHITECTURAL GEM</span>
+                <span class="gem-distance-badge">9 min walk (700m)</span>
+              </div>
+              <div class="gem-card-content">
+                <h3 class="gem-title">Nana Wada & Teakwood Diwan-e-Khas</h3>
+                <p class="gem-brief">Built by Nana Phadnavis in 1780. Features intricate carved cypress pillars, secret ceiling chambers, and original Peshwa woodwork.</p>
+                
+                <div class="why-fits-tag">
+                  <span class="fits-icon">🎯</span>
+                  <span><strong>Why this fits you:</strong> Located just 2 streets from your main path; 90% of regular tourists walk right past it.</span>
+                </div>
+
+                <div class="gem-meta-row">
+                  <span class="badge-tag">🪵 Peshwa Woodwork</span>
+                  <span class="badge-tag">💰 Free</span>
+                  <span class="badge-tag">📸 Great Shadows</span>
+                  <span class="crowd-indicator low">🟢 Peaceful</span>
+                </div>
+
+                <div class="gem-action-row">
+                  <button class="btn-card-primary" onclick="app.showToast('Nana Wada added to current trail!')">Add to Current Route</button>
+                  <button class="btn-card-secondary" onclick="app.showToast('Saved to your collection!')">Bookmark</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- GEM 3: VETAL TEKDI QUARRY -->
+            <div class="gem-card with-photo" data-category="photo">
+              <div class="gem-card-media" style="background-image: url('images/vetal_tekdi.jpg');">
+                <span class="gem-highlight-pill nature-pill">🌿 NATURE & PANORAMA</span>
+                <span class="gem-distance-badge">2.4 km (12 min cab)</span>
+              </div>
+              <div class="gem-card-content">
+                <h3 class="gem-title">Vetal Tekdi Secret Quarry & Peacock Vista</h3>
+                <p class="gem-brief">The highest natural peak in Pune city limits (2,600 ft). An abandoned quarry pond reflecting the Sahyadri morning mist.</p>
+                
+                <div class="why-fits-tag">
+                  <span class="fits-icon">🎯</span>
+                  <span><strong>Why this fits you:</strong> Recommended if you prefer fresh breeze and birdsong over city asphalt.</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- SCREEN 5: FOOD EXPLORER (PUNE FOOD STORIES & EVOLUTION) -->
+        <!-- ============================================================== -->
+        <section class="screen" id="screen-food" aria-label="Pune Culinary Explorer">
+          
+          <div class="screen-top-bar">
+            <button class="back-nav-btn" onclick="app.navigateTo('landing')" aria-label="Go back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="screen-title-center">
+              <h2 class="screen-heading">Pune Culinary Story Explorer</h2>
+              <span class="screen-subheading">Traditions, origin stories & iconic nearby bites</span>
+            </div>
+            <button class="icon-circle-btn" onclick="app.navigateTo('planner')" title="Add food to itinerary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+          </div>
+
+          <!-- Food Search & Category Nav -->
+          <div class="food-search-box">
+            <!-- ANNOTATION 12: FOOD STORIES & CULTURAL SIGNIFICANCE -->
+            <div class="ux-annotation-badge" data-annot-id="12">12</div>
+            <div class="search-input-group">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input type="text" id="foodSearchInput" class="search-input" placeholder="Search dish (e.g. Misal, Bakarwadi, Mastani, Irani Chai...)" oninput="app.filterFoodList(this.value)">
+            </div>
+          </div>
+
+          <!-- Food Tabs -->
+          <div class="food-tabs-row" role="tablist">
+            <button class="food-tab active" data-food-tab="misal">🍲 Puneri Misal</button>
+            <button class="food-tab" data-food-tab="bakarwadi">🌀 Bakarwadi</button>
+            <button class="food-tab" data-food-tab="mastani">🍧 Sujata Mastani</button>
+            <button class="food-tab" data-food-tab="irani">☕ Irani Chai & Shrewsbury</button>
+          </div>
+
+          <!-- Dynamic Food Content View with Real Visuals -->
+          <div class="food-detail-container" id="foodDetailContainer">
+            
+            <div class="food-hero-banner with-img" style="background-image: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(30, 20, 10, 0.85) 100%), url('images/puneri_misal.jpg');">
+              <div class="food-hero-badge">CULTURAL ICON • BREAKFAST RITUAL</div>
+              <h3 class="food-hero-title">The Legend of Puneri Misal</h3>
+              <p class="food-hero-subtitle">How a humble mill-workers' morning fuel became a passionate city obsession.</p>
+            </div>
+
+            <div class="food-story-grid">
+              
+              <!-- Origin & Evolution -->
+              <div class="story-block-card">
+                <div class="story-block-icon">⏳</div>
+                <div class="story-block-text">
+                  <h4>Origins & Historical Evolution</h4>
+                  <p>Born in the late 19th century in Pune's textile mill zones. Workers needed high-protein sprouted moth beans (matki) and fiery spice to endure 12-hour manual shifts. Unlike the tomato-heavy Mumbai misal, traditional Puneri misal incorporates pohe (flattened rice) at the base to absorb the aromatic kat (gravy).</p>
+                </div>
+              </div>
+
+              <!-- Cultural Significance -->
+              <div class="story-block-card">
+                <div class="story-block-icon">🏛️</div>
+                <div class="story-block-text">
+                  <h4>Cultural Meaning in Pune Life</h4>
+                  <p>Misal in Pune is not merely breakfast; it is a weekend debating platform. Every Peth resident fiercely defends their local stall. The balance between <em>tikhat</em> (spiciness), <em>farsan</em> crunch, and freshly chopped onions is regarded as a sacred culinary metric.</p>
+                </div>
+              </div>
+
+              <!-- Regional Variations -->
+              <div class="story-block-card">
+                <div class="story-block-icon">🗺️</div>
+                <div class="story-block-text">
+                  <h4>Regional Kat Variations (Puneri vs Kolhapuri vs Nashik)</h4>
+                  <ul class="styled-bullet-list">
+                    <li><strong>Puneri Misal (Bedekar/Kata Kirr):</strong> Slightly sweet tamarind hint in Bedekar, balanced fiery coriander-onion broth in Kata Kirr; served with pav or bread slices.</li>
+                    <li><strong>Kolhapuri Tambda Kat:</strong> Scorching red chili base using Lavangi chilies and mutton-stock broth adaptations.</li>
+                    <li><strong>Nashik Black Kat (Kala Masala):</strong> Roasted coconut and charred onion spices giving an intense smoky dark broth.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Where to Try It Nearby (Location + Distance + Budget) -->
+              <div class="where-to-try-card">
+                <div class="try-card-header">
+                  <div>
+                    <span class="micro-label">RECOMMENDED NEARBY SPOT</span>
+                    <h4>Kata Kirr (Karve Road Branch)</h4>
+                  </div>
+                  <span class="badge-price">₹110 / plate</span>
+                </div>
+                <p class="try-address">📍 1.2 km from your route (9 min auto rickshaw)</p>
+                <div class="try-features">
+                  <span>🟢 Veg Only</span>
+                  <span>🔥 Choose Spiciness: Light / Medium / Teekha</span>
+                  <span>⏱️ 12 min typical wait</span>
+                </div>
+                <div class="try-card-actions">
+                  <button class="btn-primary-teal" onclick="app.showToast('Route updated! Adding Kata Kirr as a 25-min food stop.')">
+                    <span>Add to Route as Food Stop</span>
+                  </button>
+                  <button class="btn-secondary-white" onclick="app.navigateTo('navigation')">Navigate Direct</button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- SCREEN 6: PLACE DETAIL + TIME TRAVEL + THEN VS NOW SLIDER -->
+        <!-- ============================================================== -->
+        <section class="screen" id="screen-place" aria-label="Place Detail and Interactive Time Travel">
+          
+          <div class="screen-top-bar">
+            <button class="back-nav-btn" onclick="app.navigateTo('discover')" aria-label="Go back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="screen-title-center">
+              <h2 class="screen-heading">Shaniwar Wada Palace</h2>
+              <span class="screen-subheading">Fortified Seat of the Maratha Empire (1732 CE)</span>
+            </div>
+            <button class="icon-circle-btn" onclick="app.toggleBookmark(this)" title="Bookmark Place">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+            </button>
+          </div>
+
+          <!-- TIME TRAVEL ERA SELECTOR (Ancient / Medieval / Colonial / Modern) -->
+          <div class="time-travel-control-card">
+            <!-- ANNOTATION 13: MATCH WITH REAL WORLD - TIME TRAVEL DIMENSION -->
+            <div class="ux-annotation-badge" data-annot-id="13">13</div>
+            <div class="era-header-row">
+              <span class="time-travel-icon">⏳</span>
+              <div>
+                <strong>Time Travel Dimension</strong>
+                <p>Shift eras to view how this location appeared across centuries</p>
+              </div>
+            </div>
+
+            <div class="era-buttons-row" role="radiogroup" aria-label="Select historical era">
+              <button class="era-btn" data-era="ancient">
+                <span class="era-year">750 CE</span>
+                <span class="era-name">Ancient</span>
+              </button>
+              <button class="era-btn active" data-era="medieval">
+                <span class="era-year">1732 CE</span>
+                <span class="era-name">Peshwa Zenith</span>
+              </button>
+              <button class="era-btn" data-era="colonial">
+                <span class="era-year">1818 CE</span>
+                <span class="era-name">Colonial Fire</span>
+              </button>
+              <button class="era-btn" data-era="modern">
+                <span class="era-year">2026 CE</span>
+                <span class="era-name">Present Day</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ERA DYNAMIC DESCRIPTION BANNER -->
+          <div class="era-status-box" id="eraStatusBox">
+            <span class="era-status-pill" id="eraStatusPill">PESHWA ZENITH • 1758 CE</span>
+            <h3 id="eraHeadingText">The Seven-Storey Palace of Bajirao I</h3>
+            <p id="eraDescText">At its height, the palace contained seven majestic wooden storeys, marble courtyards, the Hazari Karanje fountain with 1,000 jets, and housed over 1,000 palace residents.</p>
+          </div>
+
+          <!-- INTERACTIVE THEN VS NOW IMAGE SLIDER (REAL PHOTOGRAPHY & ARCHITECTURAL RECREATION) -->
+          <div class="then-now-container" id="thenNowContainer">
+            <!-- ANNOTATION 14: INTERACTIVE THEN VS NOW VISUALIZATION -->
+            <div class="ux-annotation-badge" data-annot-id="14">14</div>
+            
+            <!-- Underneath Image / THEN (1780 CE) with Bespoke Historical Recreation -->
+            <div class="then-image-layer">
+              <img src="images/shaniwar_wada_1780.jpg" alt="Shaniwar Wada 1780 CE Historical Reconstruction" class="slider-photo-img">
+              <span class="era-watermark left-watermark">THEN • 1780 CE (7-Storey Palace & 1,000-Jet Fountain)</span>
+            </div>
+
+            <!-- Overlying Image / NOW (2026 CE) - Clipped by width with Real Photograph -->
+            <div class="now-image-layer" id="nowImageLayer">
+              <img src="images/shaniwar_wada_modern.jpg" alt="Shaniwar Wada 2026 CE Present Day Ruins and Gate" class="slider-photo-img">
+              <span class="era-watermark right-watermark">NOW • 2026 CE (Stone Ramparts & Gardens)</span>
+            </div>
+
+            <!-- Draggable Splitter Handle -->
+            <div class="split-slider-handle" id="splitSliderHandle" role="slider" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-label="Then vs Now slider handle">
+              <div class="handle-line"></div>
+              <div class="handle-button">
+                <span>◀ ▶</span>
+              </div>
+              <div class="handle-line"></div>
+            </div>
+
+            <div class="slider-instruction-pill">
+              Drag handle left/right to peel back 1780 vs 2026
+            </div>
+          </div>
+
+          <!-- EMBEDDED AUDIO GUIDE PLAYER (Interactive with Play, Scrub, Transcript) -->
+          <div class="audio-guide-player-card">
+            <!-- ANNOTATION 15: AUDIO GUIDE & MULTIMODAL ACCESSIBILITY -->
+            <div class="ux-annotation-badge" data-annot-id="15">15</div>
+            
+            <div class="player-header-row">
+              <div class="player-icon-pulse">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+              </div>
+              <div>
+                <strong class="player-title">Audio Guide: The Ghostly Fall of Narayanrao</strong>
+                <span class="player-meta">Narration by Dr. Shrikant Joshi • 03:42</span>
+              </div>
+              <button class="speed-toggle-btn" id="audioSpeedBtn" onclick="app.cycleAudioSpeed()">1.0x</button>
+            </div>
+
+            <!-- Audio Waveform Visualization -->
+            <div class="audio-waveform-bars" id="audioWaveform">
+              <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+              <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+              <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+              <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            </div>
+
+            <!-- Scrubber Progress Bar -->
+            <div class="audio-scrubber-row">
+              <span class="audio-time" id="audioCurrentTime">01:14</span>
+              <input type="range" class="audio-seek-slider" id="audioSeekSlider" min="0" max="222" value="74" oninput="app.seekAudio(this.value)">
+              <span class="audio-time">03:42</span>
+            </div>
+
+            <!-- Playback Controls -->
+            <div class="playback-controls-row">
+              <button class="skip-btn" onclick="app.skipAudio(-15)" title="Rewind 15 seconds">↺ 15s</button>
+              <button class="play-pause-circle-btn" id="playAudioBtn" onclick="app.toggleAudioPlay()">
+                <svg id="playIcon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              </button>
+              <button class="skip-btn" onclick="app.skipAudio(15)" title="Forward 15 seconds">15s ↻</button>
+            </div>
+
+            <!-- Expandable Transcript (Accessibility Heuristic #8 & WCAG AA) -->
+            <div class="transcript-drawer">
+              <button class="transcript-toggle-btn" onclick="app.toggleTranscript()">
+                <span>📜 View Written Transcript</span>
+                <span id="transcriptArrow">▼</span>
+              </button>
+              <div class="transcript-content hidden" id="transcriptContent">
+                <p><em>"On the full moon night of August 30, 1773, the young fifth Peshwa Narayanrao fled through these very corridors toward his uncle Raghunathrao's chambers, crying 'Kaka Mala Vachva' (Uncle, save me!). The Gardi guards under Sumer Singh intercepted him before dawn..."</em></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Historical Timeline Accordion -->
+          <div class="place-timeline-card">
+            <h3 class="timeline-title">Chronological Milestones</h3>
+            <div class="milestones-track">
+              <div class="milestone-item">
+                <span class="milestone-year">1730 CE</span>
+                <div class="milestone-info">
+                  <strong>Foundation by Baji Rao I</strong>
+                  <p>Ceremonial bhoomi pooja conducted on a Saturday (Shaniwar), giving the fort its name.</p>
+                </div>
+              </div>
+              <div class="milestone-item">
+                <span class="milestone-year">1773 CE</span>
+                <div class="milestone-info">
+                  <strong>The Murder of Narayanrao</strong>
+                  <p>Political intrigue leading to the installation of Sawai Madhavrao.</p>
+                </div>
+              </div>
+              <div class="milestone-item">
+                <span class="milestone-year">1828 CE</span>
+                <div class="milestone-info">
+                  <strong>The Great 7-Day Conflagration</strong>
+                  <p>A mysterious fire consumed all six upper wooden storeys, leaving only stone plinths.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div class="sticky-footer-action">
+            <button class="btn-primary-teal w-full" onclick="app.navigateTo('navigation')">
+              <span>Start Audio Walking Tour Here</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- SCREEN 7: AI SMART TRIP PLANNER (Natural Language + Timeline) -->
+        <!-- ============================================================== -->
+        <section class="screen" id="screen-planner" aria-label="AI Smart Trip Planner">
+          
+          <div class="screen-top-bar">
+            <button class="back-nav-btn" onclick="app.navigateTo('landing')" aria-label="Go back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="screen-title-center">
+              <h2 class="screen-heading">AI Smart Trip Planner</h2>
+              <span class="screen-subheading">Natural language itinerary architect for Pune</span>
+            </div>
+            <button class="icon-circle-btn" onclick="app.resetPlanner()" title="Reset planner">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            </button>
+          </div>
+
+          <!-- Natural Language Input Prompt Box -->
+          <div class="ai-prompt-container">
+            <!-- ANNOTATION 16: NATURAL LANGUAGE CONVERSATIONAL UI -->
+            <div class="ux-annotation-badge" data-annot-id="16">16</div>
+            <label for="aiPromptInput" class="ai-prompt-label">
+              <span class="ai-sparkle">✨</span>
+              <strong>Describe your ideal Pune hours in your own words:</strong>
+            </label>
+            <div class="prompt-input-wrapper">
+              <textarea id="aiPromptInput" class="ai-textarea" rows="3">I have 4 hours in Pune, I want vegetarian food, photography spots and some famous places</textarea>
+              <button class="btn-generate-ai" id="generatePlanBtn" onclick="app.generateAIItinerary()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <span>Generate Itinerary</span>
+              </button>
+            </div>
+
+            <!-- Quick Template Prompt Pills -->
+            <div class="quick-prompts-scroll">
+              <button class="prompt-pill" onclick="app.applyPromptTemplate('3 hrs: Peshwa history + authentic Puneri misal + quiet wada walk')">
+                🏛️ 3h Peshwa + Misal
+              </button>
+              <button class="prompt-pill" onclick="app.applyPromptTemplate('2 hrs: Sunset photography on Vetal Tekdi + artisanal Irani chai')">
+                📸 Sunset Tekdi + Chai
+              </button>
+              <button class="prompt-pill" onclick="app.applyPromptTemplate('4 hrs: Family with kids, stroller friendly parks and safe food')">
+                👨‍👩‍👧 Family & Kids Safe
+              </button>
+            </div>
+          </div>
+
+          <!-- AI LOADING / GENERATION SKELETON STATE (Simulated Nielsen #1) -->
+          <div class="ai-loading-state hidden" id="aiLoadingState" role="status" aria-live="polite">
+            <div class="ai-pulse-spinner"></div>
+            <h3 class="loading-status-title" id="loadingStatusText">Analyzing Pune heritage archives & walking graphs...</h3>
+            <div class="ai-progress-stepper">
+              <div class="stepper-line" id="stepperLine"></div>
+              <div class="step-check active">1. Parsing Intent</div>
+              <div class="step-check" id="stepCheck2">2. Checking Open Hours</div>
+              <div class="step-check" id="stepCheck3">3. Pacing Transit</div>
+            </div>
+          </div>
+
+          <!-- GENERATED TIME-BASED TIMELINE (Editable / Reorderable / Deletable) -->
+          <div class="planner-itinerary-output" id="plannerOutput">
+            
+            <div class="itinerary-summary-bar">
+              <div>
+                <span class="micro-label">GENERATED CUSTOM SCHEDULE</span>
+                <h3 class="itinerary-total-stat">4 Stops • 3 hrs 50 mins • 4.8 km</h3>
+              </div>
+              <span class="badge-pill-teal">Optimized Pacing</span>
+            </div>
+
+            <!-- Reorderable Stops List -->
+            <div class="itinerary-stops-flow" id="itineraryStopsList">
+              
+              <!-- STOP 1 -->
+              <div class="itinerary-stop-card" data-stop-id="1">
+                <!-- ANNOTATION 17: USER CONTROL & FREEDOM (REORDER / DELETE) -->
+                <div class="ux-annotation-badge" data-annot-id="17">17</div>
+                <div class="stop-time-col">
+                  <span class="stop-clock">10:00 AM</span>
+                  <span class="stop-duration">45 mins</span>
+                </div>
+                <div class="stop-content-col">
+                  <div class="stop-header">
+                    <span class="stop-category-tag">🏛️ Heritage Anchor</span>
+                    <div class="stop-reorder-actions">
+                      <button class="btn-reorder" onclick="app.moveStop(1, 'up')" title="Move earlier">▲</button>
+                      <button class="btn-reorder" onclick="app.moveStop(1, 'down')" title="Move later">▼</button>
+                      <button class="btn-delete-stop" onclick="app.deleteStop(1)" title="Remove stop">✕</button>
+                    </div>
+                  </div>
+                  <h4 class="stop-name">Shaniwar Wada Palace & Dilli Darwaza</h4>
+                  <p class="stop-note">Best morning light through the north gate spikes. Photography paradise.</p>
+                </div>
+              </div>
+
+              <!-- Transit Segment 1 -->
+              <div class="transit-connector">
+                <span class="transit-icon">🚶</span>
+                <span class="transit-text">6 min walk (450m) through Kasba Peth historic bazaar</span>
+              </div>
+
+              <!-- STOP 2 -->
+              <div class="itinerary-stop-card" data-stop-id="2">
+                <div class="stop-time-col">
+                  <span class="stop-clock">10:51 AM</span>
+                  <span class="stop-duration">30 mins</span>
+                </div>
+                <div class="stop-content-col">
+                  <div class="stop-header">
+                    <span class="stop-category-tag">🕊️ Sacred & Culture</span>
+                    <div class="stop-reorder-actions">
+                      <button class="btn-reorder" onclick="app.moveStop(2, 'up')" title="Move earlier">▲</button>
+                      <button class="btn-reorder" onclick="app.moveStop(2, 'down')" title="Move later">▼</button>
+                      <button class="btn-delete-stop" onclick="app.deleteStop(2)" title="Remove stop">✕</button>
+                    </div>
+                  </div>
+                  <h4 class="stop-name">Kasba Ganpati & Lal Mahal</h4>
+                  <p class="stop-note">Historic Gramdaivat of Pune established by Jijabai in 1630 CE.</p>
+                </div>
+              </div>
+
+              <!-- Transit Segment 2 -->
+              <div class="transit-connector">
+                <span class="transit-icon">🚶</span>
+                <span class="transit-text">8 min walk (550m) via Sadashiv Peth</span>
+              </div>
+
+              <!-- STOP 3 -->
+              <div class="itinerary-stop-card" data-stop-id="3">
+                <div class="stop-time-col">
+                  <span class="stop-clock">11:30 AM</span>
+                  <span class="stop-duration">45 mins</span>
+                </div>
+                <div class="stop-content-col">
+                  <div class="stop-header">
+                    <span class="stop-category-tag food-tag">🍲 Iconic Vegetarian Brunch</span>
+                    <div class="stop-reorder-actions">
+                      <button class="btn-reorder" onclick="app.moveStop(3, 'up')" title="Move earlier">▲</button>
+                      <button class="btn-reorder" onclick="app.moveStop(3, 'down')" title="Move later">▼</button>
+                      <button class="btn-delete-stop" onclick="app.deleteStop(3)" title="Remove stop">✕</button>
+                    </div>
+                  </div>
+                  <h4 class="stop-name">Bedekar Tea Stall (Misal & Slice Bread)</h4>
+                  <p class="stop-note">Authentic Puneri mild tamarind kat. Fulfills your vegetarian food request.</p>
+                </div>
+              </div>
+
+              <!-- Transit Segment 3 -->
+              <div class="transit-connector">
+                <span class="transit-icon">🛺</span>
+                <span class="transit-text">12 min auto rickshaw (2.4 km) across Mutha river</span>
+              </div>
+
+              <!-- STOP 4 -->
+              <div class="itinerary-stop-card" data-stop-id="4">
+                <div class="stop-time-col">
+                  <span class="stop-clock">12:30 PM</span>
+                  <span class="stop-duration">50 mins</span>
+                </div>
+                <div class="stop-content-col">
+                  <div class="stop-header">
+                    <span class="stop-category-tag">💎 Hidden Monolith</span>
+                    <div class="stop-reorder-actions">
+                      <button class="btn-reorder" onclick="app.moveStop(4, 'up')" title="Move earlier">▲</button>
+                      <button class="btn-reorder" onclick="app.moveStop(4, 'down')" title="Move later">▼</button>
+                      <button class="btn-delete-stop" onclick="app.deleteStop(4)" title="Remove stop">✕</button>
+                    </div>
+                  </div>
+                  <h4 class="stop-name">Pataleshwar Cave Temple (8th Century CE)</h4>
+                  <p class="stop-note">Cool subterranean basalt sanctuary. Stunning photographic contrast with sunlight.</p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Add Stop Button (Flexibility) -->
+            <button class="btn-add-custom-stop" onclick="app.addCustomStopPrompt()">
+              <span>+ Add Another Stop or Food Break</span>
+            </button>
+          </div>
+
+          <!-- Bottom Action -->
+          <div class="sticky-footer-action">
+            <button class="btn-primary-teal w-full" onclick="app.navigateTo('navigation')">
+              <span>Launch Live Navigation for this Itinerary</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- SCREEN 8: LIVE NAVIGATION / EXPLORE MODE (REAL MAP & GPS) -->
+        <!-- ============================================================== -->
+        <section class="screen" id="screen-navigation" aria-label="Live Navigation and Explore Mode">
+          
+          <!-- Turn-by-Turn Instruction Banner (Top) -->
+          <div class="nav-instruction-banner">
+            <!-- ANNOTATION 18: VISIBILITY OF SYSTEM STATUS (NAVIGATION) -->
+            <div class="ux-annotation-badge" data-annot-id="18">18</div>
+            <div class="maneuver-icon-box">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 10 4 15 9 20"></polyline><path d="M20 4v7a4 4 0 0 1-4 4H4"></path></svg>
+            </div>
+            <div class="maneuver-details">
+              <span class="maneuver-distance">In 120 meters</span>
+              <h3 class="maneuver-street">Turn Left onto Lakdi Pul (Shivaji Bridge)</h3>
+              <span class="maneuver-lane">Look for the carved stone piers below the road</span>
+            </div>
+            <button class="sound-mute-btn" id="muteNavBtn" onclick="app.toggleNavMute()" title="Mute voice alerts">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            </button>
+          </div>
+
+          <!-- REAL INTERACTIVE LIVE NAVIGATION MAP CONTAINER -->
+          <div class="real-map-wrapper nav-map-wrapper">
+            
+            <div id="realLiveNavMap" class="real-leaflet-map" style="height: 330px;" role="region" aria-label="Live Turn-by-Turn Navigation Map"></div>
+
+            <!-- Floating History Layer Status Toggle -->
+            <div class="nav-history-badge">
+              <span>📜 History Layer: <strong>ON</strong></span>
+              <button class="btn-micro-toggle" onclick="app.toggleNavHistoryLayer(this)">Toggle</button>
+            </div>
+
+            <!-- Floating Landmark Photo Preview Inset -->
+            <div class="nav-landmark-photo-inset" title="Approaching Shaniwar Wada">
+              <img src="images/shaniwar_wada_modern.jpg" alt="Destination Preview" class="inset-img">
+              <span class="inset-label">Destination Ahead</span>
+            </div>
+
+            <!-- Map Controls -->
+            <div class="map-layer-controls">
+              <button class="map-type-btn active" onclick="app.switchMapTileLayer('nav', 'street')">🗺️ Street</button>
+              <button class="map-type-btn" onclick="app.switchMapTileLayer('nav', 'satellite')">🛰️ Satellite</button>
+              <button class="map-type-btn" onclick="app.recenterMap('nav')">🎯 My Location</button>
+            </div>
+
+            <!-- Reroute / Skip Floating Quick Actions -->
+            <div class="nav-floating-actions">
+              <button class="btn-floating-action" onclick="app.triggerRerouteModal()" title="Recalculate route to avoid congestion">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                <span>Reroute</span>
+              </button>
+              <button class="btn-floating-action" onclick="app.skipCurrentStop()" title="Skip this stop and advance">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+                <span>Skip Stop</span>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- COLLAPSIBLE BOTTOM SHEET: Story Alert & Journey ETA -->
+          <div class="nav-bottom-sheet" id="navBottomSheet">
+            <div class="sheet-drag-handle" onclick="app.toggleBottomSheet()">
+              <div class="drag-bar"></div>
+            </div>
+
+            <!-- Proximity Story Pop-Up Notification -->
+            <div class="proximity-story-card">
+              <div class="story-card-top">
+                <span class="story-alert-badge">📍 STORY TRIGGERED (15m AWAY)</span>
+                <span class="story-tag">1761 Panipat Aftermath</span>
+              </div>
+              <h4 class="story-headline">The Wooden Bridge of the Retreating Army</h4>
+              <p class="story-snip">
+                "Lakdi Pul was hurriedly constructed from sal wood in 1761 by Nanasaheb Peshwa to receive the battered survivors of the Third Battle of Panipat..."
+              </p>
+              
+              <!-- Mini Audio Player inside Navigation -->
+              <div class="nav-mini-audio">
+                <button class="btn-mini-play" onclick="app.toggleNavStoryAudio(this)">
+                  <span>▶ Play Story (1m 15s)</span>
+                </button>
+                <button class="btn-mini-dismiss" onclick="app.dismissStoryCard()">Skip Story</button>
+              </div>
+            </div>
+
+            <!-- Journey ETA & Trip Ending Controls -->
+            <div class="nav-eta-row">
+              <div>
+                <span class="eta-big">14 mins</span>
+                <span class="eta-sub">1.8 km remaining • 1 stop ahead</span>
+              </div>
+              <button class="btn-danger-end" onclick="app.navigateTo('rewards')">
+                <span>End Experience</span>
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- SCREEN 9: POST-EXPERIENCE (REWARDS, BADGES & FEEDBACK) -->
+        <!-- ============================================================== -->
+        <section class="screen" id="screen-rewards" aria-label="Post Experience and Rewards">
+          
+          <div class="screen-top-bar">
+            <button class="back-nav-btn" onclick="app.navigateTo('navigation')" aria-label="Go back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="screen-title-center">
+              <h2 class="screen-heading">Journey Summary & Badges</h2>
+              <span class="screen-subheading">Your Old Pune Exploration Completed</span>
+            </div>
+            <button class="icon-circle-btn" onclick="app.shareTrip()" title="Share trip memory">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            </button>
+          </div>
+
+          <!-- Trip Completed Hero Card with Visual Trophy -->
+          <div class="recap-hero-card with-bg" style="background-image: linear-gradient(135deg, rgba(27, 107, 115, 0.95), rgba(15, 55, 60, 0.98)), url('images/shaniwar_wada_modern.jpg');">
+            <!-- ANNOTATION 19: POST EXPERIENCE VALUE & RETENTION -->
+            <div class="ux-annotation-badge" data-annot-id="19">19</div>
+            <div class="trophy-circle">🏆</div>
+            <h3 class="recap-title">Trail Mastered: Old Pune Heritage Walk</h3>
+            <p class="recap-subtitle">You uncovered 4 historical secrets and supported 2 heritage vendors.</p>
+
+            <div class="recap-metrics-grid">
+              <div class="metric-cell">
+                <span class="metric-val">4.8 km</span>
+                <span class="metric-lbl">Walked</span>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-val">3</span>
+                <span class="metric-lbl">Stories Heard</span>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-val">92 mins</span>
+                <span class="metric-lbl">Total Time</span>
+              </div>
+              <div class="metric-cell">
+                <span class="metric-val">100%</span>
+                <span class="metric-lbl">Pacing Score</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Feedback Section (Post-Experience Pain Point Solution) -->
+          <div class="feedback-card">
+            <h4>How was the storytelling and route pacing?</h4>
+            <div class="star-rating-row" role="radiogroup" aria-label="Rate experience">
+              <button class="star-btn active" data-star="1" onclick="app.setRating(1)">★</button>
+              <button class="star-btn active" data-star="2" onclick="app.setRating(2)">★</button>
+              <button class="star-btn active" data-star="3" onclick="app.setRating(3)">★</button>
+              <button class="star-btn active" data-star="4" onclick="app.setRating(4)">★</button>
+              <button class="star-btn active" data-star="5" onclick="app.setRating(5)">★</button>
+            </div>
+            
+            <div class="feedback-chips-grid">
+              <button class="feedback-tag active" onclick="this.classList.toggle('active')">Fascinating Stories</button>
+              <button class="feedback-tag active" onclick="this.classList.toggle('active')">Great Misal Spot</button>
+              <button class="feedback-tag" onclick="this.classList.toggle('active')">Walking Pacing Just Right</button>
+              <button class="feedback-tag" onclick="this.classList.toggle('active')">Audio Guide Clear</button>
+            </div>
+          </div>
+
+          <!-- Exploration Badges Unlocked Section -->
+          <div class="badges-section">
+            <div class="section-header">
+              <div>
+                <h3 class="section-title">Exploration Badges Earned</h3>
+                <p class="section-subtitle">Level 3 Pune Urban Explorer</p>
+              </div>
+              <span class="badge-pill-amber">3 New!</span>
+            </div>
+
+            <div class="badges-grid">
+              <div class="badge-card unlocked" onclick="app.showBadgeModal('Peshwa Chronicler')">
+                <div class="badge-icon-box">🛡️</div>
+                <div class="badge-info">
+                  <strong>Peshwa Chronicler</strong>
+                  <span>Unlocked Shaniwar Wada & Lakdi Pul stories</span>
+                </div>
+              </div>
+
+              <div class="badge-card unlocked" onclick="app.showBadgeModal('Misal Connoisseur')">
+                <div class="badge-icon-box">🌶️</div>
+                <div class="badge-info">
+                  <strong>Misal Connoisseur</strong>
+                  <span>Sampled authentic Puneri kat breakfast</span>
+                </div>
+              </div>
+
+              <div class="badge-card unlocked" onclick="app.showBadgeModal('Monolith Seeker')">
+                <div class="badge-icon-box">🏛️</div>
+                <div class="badge-info">
+                  <strong>Monolith Seeker</strong>
+                  <span>Discovered 8th-century Pataleshwar Cave</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Saved Places Library -->
+          <div class="saved-library-card">
+            <h4>Saved to Your Travel Diary</h4>
+            <div class="saved-items-list">
+              <div class="saved-row" onclick="app.navigateTo('place')">
+                <img src="images/shaniwar_wada_modern.jpg" alt="Shaniwar Wada Thumbnail" class="saved-thumb-img">
+                <div class="saved-info">
+                  <strong>Shaniwar Wada Palace</strong>
+                  <span>Audio transcript & 1780 timeline saved</span>
+                </div>
+                <span class="saved-arrow">➔</span>
+              </div>
+              <div class="saved-row" onclick="app.navigateTo('food')">
+                <img src="images/puneri_misal.jpg" alt="Misal Thumbnail" class="saved-thumb-img">
+                <div class="saved-info">
+                  <strong>Kata Kirr Misal</strong>
+                  <span>Saved for next weekend visit</span>
+                </div>
+                <span class="saved-arrow">➔</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Personalized Next Step Suggestions with Real Scenic Photography -->
+          <div class="recommended-next-section">
+            <div class="section-header">
+              <div>
+                <h3 class="section-title">Where to Next in Pune?</h3>
+                <p class="section-subtitle">Curated based on your history and food appetite</p>
+              </div>
+            </div>
+
+            <div class="next-card with-photo" onclick="app.navigateTo('preferences')">
+              <div class="next-card-media" style="background-image: url('images/sinhagad_fort.jpg?v=20261005_sunrise');">
+                <span class="next-badge">RECOMMENDED FOR SATURDAY SUNRISE</span>
+              </div>
+              <div class="next-card-content">
+                <h4>Sinhagad Fort Sunrise Trek & Hot Pithla Bhakri</h4>
+                <p>Climb the historic fort where Tanaji Malusare fought, then savor wood-fire pithla bhakri with the valley mist at 6:30 AM.</p>
+                <div class="next-meta">
+                  <span>⏱️ 4 hrs</span>
+                  <span>🌿 Nature + Fort</span>
+                  <span class="next-action-link">Plan This Trip ➔</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sticky-footer-action">
+            <button class="btn-primary-teal w-full" onclick="app.navigateTo('landing')">
+              <span>Back to Home Screen</span>
+            </button>
+          </div>
+
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- SCREEN 10: UX RATIONALE & EVALUATION MATRIX (COURSE SUBMISSION) -->
+        <!-- ============================================================== -->
+        <section class="screen" id="screen-rationale" aria-label="UX Rationale and Heuristics Matrix">
+          
+          <div class="screen-top-bar">
+            <button class="back-nav-btn" onclick="app.navigateTo('landing')" aria-label="Go back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="screen-title-center">
+              <h2 class="screen-heading">UX Rationale & Heuristics Matrix</h2>
+              <span class="screen-subheading">Comprehensive Evaluation for Course Review</span>
+            </div>
+            <button class="icon-circle-btn" onclick="window.print()" title="Print / Export Matrix as PDF">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            </button>
+          </div>
+
+          <div class="rationale-page-container">
+            
+            <div class="rationale-summary-box">
+              <h3 class="rationale-title">Chronopath Navigator UX Architecture Framework</h3>
+              <p>
+                This interactive prototype bridges utilitarian navigation with rich cultural storytelling. Below is the systematic mapping of <strong>User Journey Pain Points</strong>, <strong>Nielsen Norman Heuristics</strong>, and <strong>Design Decisions</strong> implemented across all screens.
+              </p>
+            </div>
+
+            <!-- 1. JOURNEY MAP VS DESIGN RESPONSE TABLE -->
+            <div class="table-section-wrapper">
+              <h3 class="section-title">1. Journey Map Pain Points ➔ UI Solutions Matrix</h3>
+              <div class="table-responsive">
+                <table class="ux-matrix-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 14%;">Journey Stage</th>
+                      <th style="width: 24%;">User Pain Point</th>
+                      <th style="width: 22%;">Heuristic / Principle</th>
+                      <th style="width: 40%;">UI Design Decision in Prototype</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>1. Awareness</strong></td>
+                      <td>Unsure if the app provides relevant, personalized experiences rather than generic GPS.</td>
+                      <td><span class="badge-heuristic">Nielsen #1 & #6</span> Minimalist Design & Value Clarity</td>
+                      <td>Landing hero with bold value proposition, real Pune heritage photography, 3-step rapid onboarding capsule, and a dedicated <strong>First-Time 1-Tap Quick-Start</strong> card.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>2. Consideration</strong></td>
+                      <td>Too many options, cognitive overload, unclear why an attraction is relevant to the traveler.</td>
+                      <td><span class="badge-heuristic">Nielsen #7 & #8</span> Flexibility & Scannable Hierarchy</td>
+                      <td>Curated recommendation cards featuring prominent <em>"Why this fits you"</em> tags, interest-based quick chips, high-res photography thumbnails, and a dedicated "Hidden Gems" section with real interactive map view.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>3. Decision</strong></td>
+                      <td>Hard to evaluate whether a route or stop fits available time, budget, and group constraints.</td>
+                      <td><span class="badge-heuristic">Nielsen #6</span> Recognition over Recall</td>
+                      <td>Real interactive street & satellite map with route polylines; Route Cards display explicit comparative metadata (Time, Distance, Budget, Highlights); clear "Recommended" badge; interactive <em>Compare Routes</em> modal evaluating 5 dimensions.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>4. Delivery / Use</strong></td>
+                      <td>Route changes, limited time, information overload while actively walking or driving.</td>
+                      <td><span class="badge-heuristic">Nielsen #3 & #1</span> User Control & Visibility of Status</td>
+                      <td>Live Navigation view on real map with turn-by-turn instruction, moving blue GPS location dot, collapsible bottom sheet, photo insets, proximity-triggered bite-sized audio stories (Lakdi Pul), "Skip / Reroute" buttons, and an active History Layer toggle.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>5. Post-Experience</strong></td>
+                      <td>Experience may not match expectations; lack of closure or memory capture.</td>
+                      <td><span class="badge-heuristic">Nielsen #10</span> Feedback, Gamification & Closure</td>
+                      <td>Quick 1-tap 5-star rating with sentiment tags, unlockable exploration badges (Peshwa Chronicler, Misal Connoisseur), digital diary library, and contextual "Where to Next" recommendations.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>6. Onboarding Freedom (#20)</strong></td>
+                      <td>Mandatory login walls create friction and drop-off before experiencing value.</td>
+                      <td><span class="badge-heuristic">Nielsen #3 & #7</span> User Freedom & Flexibility</td>
+                      <td>Frictionless entry with prominent <strong>"Continue as Guest (No Login Required)"</strong> option, 1-tap Google/Apple logins, and persistent multilingual selector (EN, MR, HI) for cultural accessibility.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- 2. NIELSEN NORMAN 10 HEURISTICS AUDIT -->
+            <div class="table-section-wrapper mt-32">
+              <h3 class="section-title">2. Nielsen's 10 Usability Heuristics Applied</h3>
+              <div class="heuristics-grid">
+                <div class="heuristic-card">
+                  <div class="h-number">#1</div>
+                  <h4>Visibility of System Status</h4>
+                  <p>Step indicators in onboarding, real-time live GPS pulsing indicator on real map, dynamic audio player scrubber, and multi-step animated skeleton loader during AI itinerary generation.</p>
+                </div>
+                <div class="heuristic-card">
+                  <div class="h-number">#2</div>
+                  <h4>Match with the Real World</h4>
+                  <p>Real interactive Google-style street and satellite map tiles of Pune, authentic Pune culinary terminology (kat, rassa, farsan), real photography, and an interactive <em>Time Travel Era Selector</em> reflecting historical Pune.</p>
+                </div>
+                <div class="heuristic-card">
+                  <div class="h-number">#3</div>
+                  <h4>User Control & Freedom</h4>
+                  <p>One-tap "Reset" buttons in Preferences, drag-and-drop reorder / delete controls for itinerary stops, Simple Mode vs Explorer Mode toggle, and prominent "Skip Story" / "Reroute" buttons in live navigation.</p>
+                </div>
+                <div class="heuristic-card">
+                  <div class="h-number">#4</div>
+                  <h4>Consistency & Standards</h4>
+                  <p>Uniform color tokens (Primary Teal #1B6B73, Accent Amber #E58A2B), standard 8-pt spacing grid, consistent card elevation, and recognizable iconography throughout.</p>
+                </div>
+                <div class="heuristic-card">
+                  <div class="h-number">#5</div>
+                  <h4>Error Prevention</h4>
+                  <p>Sliders with constrained safe bounds (1h-10h), segmented buttons for budget classes, and automatic recalculation of arrival times when removing itinerary waypoints.</p>
+                </div>
+                <div class="heuristic-card">
+                  <div class="h-number">#6</div>
+                  <h4>Recognition over Recall</h4>
+                  <p>Visual interest chips instead of blank inputs, "Why this fits you" explicit rationale on every stop, and the Side-by-Side Route Comparison modal.</p>
+                </div>
+                <div class="heuristic-card">
+                  <div class="h-number">#7</div>
+                  <h4>Flexibility & Efficiency of Use</h4>
+                  <p>1-tap Quick-Start Journeys for beginners, pre-filled prompt chips for fast AI trip planning, List / Map toggle in Discover, playback speed toggles (1.0x / 1.25x / 1.5x), and keyboard navigation focus rings.</p>
+                </div>
+                <div class="heuristic-card">
+                  <div class="h-number">#8</div>
+                  <h4>Aesthetic & Minimalist Design</h4>
+                  <p>Progressive disclosure: complex architectural history is tucked into collapsible accordions and audio players, keeping screens clean, visual, and scannable.</p>
+                </div>
+                <div class="heuristic-card">
+                  <div class="h-number">#9</div>
+                  <h4>Help Users Recover from Errors</h4>
+                  <p>Simulated offline network banner with immediate "Retry Connection" action and fallback to cached local heritage stories.</p>
+                </div>
+                <div class="heuristic-card">
+                  <div class="h-number">#10</div>
+                  <h4>Help & Documentation</h4>
+                  <p>Interactive UX Annotation system with 19 callouts explaining the UX rationale behind every major interface widget.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. ACCESSIBILITY & WCAG AA AUDIT -->
+            <div class="table-section-wrapper mt-32">
+              <h3 class="section-title">3. Accessibility (WCAG 2.1 AA) Compliance Audit</h3>
+              <div class="accessibility-checklist">
+                <div class="check-item">
+                  <span class="check-icon">✓</span>
+                  <div>
+                    <strong>Color Contrast Ratios</strong>
+                    <p>Primary Teal (#1B6B73) on White (#FFFFFF) provides a <strong>5.4:1</strong> contrast ratio, exceeding WCAG AA requirement of 4.5:1 for body copy.</p>
+                  </div>
+                </div>
+                <div class="check-item">
+                  <span class="check-icon">✓</span>
+                  <div>
+                    <strong>Minimum Touch Targets</strong>
+                    <p>All clickable buttons, chips, and icon triggers are engineered to a minimum of <strong>44px × 44px</strong> for thumb friendliness on mobile.</p>
+                  </div>
+                </div>
+                <div class="check-item">
+                  <span class="check-icon">✓</span>
+                  <div>
+                    <strong>Multi-Modal Information (No Color Reliance Alone)</strong>
+                    <p>Status indicators pair color with icons and explicit text tags (e.g. "🟢 Very Quiet", "★ Recommended").</p>
+                  </div>
+                </div>
+                <div class="check-item">
+                  <span class="check-icon">✓</span>
+                  <div>
+                    <strong>Audio Transcripts Provided</strong>
+                    <p>Every audio narration includes a readable, expandable transcript drawer for hearing-impaired users or quiet environments.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. DESIGN SYSTEM TOKENS REFERENCE -->
+            <div class="table-section-wrapper mt-32">
+              <h3 class="section-title">4. Design System Tokens</h3>
+              <div class="tokens-spec-grid">
+                <div class="token-group">
+                  <h4>Color Palette</h4>
+                  <div class="color-swatches-row">
+                    <div class="swatch-item">
+                      <div class="swatch-color" style="background: #1B6B73;"></div>
+                      <span>#1B6B73<br>Deep Teal (Primary)</span>
+                    </div>
+                    <div class="swatch-item">
+                      <div class="swatch-color" style="background: #E58A2B;"></div>
+                      <span>#E58A2B<br>Warm Amber (Accent)</span>
+                    </div>
+                    <div class="swatch-item">
+                      <div class="swatch-color" style="background: #F8F9FA; border: 1px solid #E2E8F0;"></div>
+                      <span>#F8F9FA<br>Off-White (Canvas)</span>
+                    </div>
+                    <div class="swatch-item">
+                      <div class="swatch-color" style="background: #1E293B;"></div>
+                      <span>#1E293B<br>Slate Dark (Text)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="token-group">
+                  <h4>Typography & 8-pt Spacing</h4>
+                  <ul class="styled-bullet-list">
+                    <li><strong>Display Headings:</strong> Plus Jakarta Sans / Playfair Display, 24px - 32px, Bold 700</li>
+                    <li><strong>Section Subheads:</strong> Plus Jakarta Sans, 16px - 18px, SemiBold 600</li>
+                    <li><strong>Body & Metadata:</strong> 13px - 14px, Regular 400 & Medium 500, line-height 1.5</li>
+                    <li><strong>Spacing Scale:</strong> 4px (0.5x), 8px (1x), 16px (2x), 24px (3x), 32px (4x), 48px (6x)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div><!-- End #appViewport -->
+
+      <!-- MOBILE BOTTOM NAVIGATION TAB BAR (6 Thumb-Friendly Tabs) -->
+      <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Bottom Navigation">
+        <button class="bottom-tab-btn active" data-nav="landing" onclick="app.navigateTo('landing')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span data-i18n="nav_home">Home</span>
+        </button>
+        <button class="bottom-tab-btn" data-nav="routes" onclick="app.navigateTo('routes')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a4.5 4.5 0 0 0 0-9H5a4.5 4.5 0 0 1 0-9H15"></path><circle cx="18" cy="5" r="3"></circle></svg>
+          <span data-i18n="nav_routes">Routes</span>
+        </button>
+        <button class="bottom-tab-btn" data-nav="discover" onclick="app.navigateTo('discover')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+          <span data-i18n="nav_discover">Discover</span>
+        </button>
+        <button class="bottom-tab-btn" data-nav="food" onclick="app.navigateTo('food')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+          <span data-i18n="nav_food">Food</span>
+        </button>
+        <button class="bottom-tab-btn" data-nav="planner" onclick="app.navigateTo('planner')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <span data-i18n="nav_planner">Planner</span>
+        </button>
+        <button class="bottom-tab-btn" data-nav="auth" onclick="app.navigateTo('auth')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span data-i18n="nav_account">Account</span>
+        </button>
+      </nav>
+
+    </div><!-- End #deviceFrame -->
+
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- MODALS, POPUPS & ANNOTATION DETAILS DRAWER -->
+  <!-- ============================================================== -->
+
+  <!-- 1. UX ANNOTATION DRAWER / POPOVER -->
+  <aside class="annotation-details-drawer" id="annotationDrawer" aria-label="UX Callout Annotation Details">
+    <div class="drawer-header">
+      <div class="drawer-badge-title">
+        <span class="drawer-annot-num" id="drawerAnnotNum">#1</span>
+        <div>
+          <h3 id="drawerAnnotTitle">UX Principle & Journey Mapping</h3>
+          <span class="drawer-sub" id="drawerAnnotSub">Nielsen Usability Heuristic</span>
+        </div>
+      </div>
+      <button class="drawer-close-btn" onclick="app.closeAnnotationDrawer()" aria-label="Close details">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div class="annot-property">
+        <span class="annot-prop-label">JOURNEY MAP PAIN POINT SOLVED:</span>
+        <p class="annot-prop-val highlight" id="drawerPainPoint">Unsure if app provides relevant experiences rather than generic GPS.</p>
+      </div>
+      <div class="annot-property">
+        <span class="annot-prop-label">HEURISTIC / PRINCIPLE APPLIED:</span>
+        <p class="annot-prop-val" id="drawerHeuristic">Heuristic #1 & Heuristic #6: Visibility of Status & Recognition over Recall</p>
+      </div>
+      <div class="annot-property">
+        <span class="annot-prop-label">DESIGN DECISION & RATIONALE:</span>
+        <p class="annot-prop-val" id="drawerRationale">Designed an upfront value proposition explaining the USP with a 3-step rapid onboarding capsule so users immediately comprehend the storytelling advantage.</p>
+      </div>
+      <div class="annot-property">
+        <span class="annot-prop-label">ACCESSIBILITY & USABILITY BENEFIT:</span>
+        <p class="annot-prop-val" id="drawerAccessibility">High contrast copy, clear heading hierarchy, zero technical jargon.</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 2. ROUTE COMPARE MODAL (Side-by-Side Comparison for Decision Pain Point) -->
+  <div class="modal-overlay hidden" id="routeCompareModal" role="dialog" aria-modal="true" aria-labelledby="compareModalTitle">
+    <div class="modal-card compare-modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 id="compareModalTitle">Side-by-Side Route Comparison</h3>
+          <span class="modal-sub">Compare 4 routes from Swargate to Shaniwar Wada</span>
+        </div>
+        <button class="modal-close-btn" onclick="app.closeRouteCompareModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="compare-table-responsive">
+          <table class="compare-matrix">
+            <thead>
+              <tr>
+                <th>Metric / Attribute</th>
+                <th class="col-highlight">★ Heritage (Rec.)</th>
+                <th>🍲 Food Trail</th>
+                <th>🌿 Scenic River</th>
+                <th>⚡ Express Direct</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Duration</strong></td>
+                <td class="col-highlight">26 mins</td>
+                <td>34 mins</td>
+                <td>30 mins</td>
+                <td>14 mins</td>
+              </tr>
+              <tr>
+                <td><strong>Distance</strong></td>
+                <td class="col-highlight">4.8 km</td>
+                <td>5.4 km</td>
+                <td>5.1 km</td>
+                <td>3.9 km</td>
+              </tr>
+              <tr>
+                <td><strong>Story Density</strong></td>
+                <td class="col-highlight">3 Historic Stops</td>
+                <td>1 Story Spot</td>
+                <td>1 Riverside Spot</td>
+                <td>0 Stories</td>
+              </tr>
+              <tr>
+                <td><strong>Food Tastings</strong></td>
+                <td class="col-highlight">1 Optional Chai</td>
+                <td>2 Iconic Tastings</td>
+                <td>0 Tastings</td>
+                <td>0 Tastings</td>
+              </tr>
+              <tr>
+                <td><strong>Traffic Stress</strong></td>
+                <td class="col-highlight">Low (Shaded alleys)</td>
+                <td>Medium (Peths)</td>
+                <td>Very Low</td>
+                <td>High (Arterial)</td>
+              </tr>
+              <tr>
+                <td><strong>Avg Cost</strong></td>
+                <td class="col-highlight">₹0 Extra</td>
+                <td>₹160 Tastings</td>
+                <td>₹0 Extra</td>
+                <td>₹0 Extra</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary-teal" onclick="app.closeRouteCompareModal(); app.navigateTo('navigation')">
+          Select Recommended Heritage Route & Navigate
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. SIMPLE 3-STEP ONBOARDING WALKTHROUGH MODAL -->
+  <div class="modal-overlay hidden" id="onboardingModal" role="dialog" aria-modal="true">
+    <div class="modal-card onboard-modal-card">
+      <div class="modal-header">
+        <span class="modal-badge-teal">WELCOME TO CHRONOPATH</span>
+        <button class="modal-close-btn" onclick="app.closeOnboardingModal()">✕</button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="onboard-step-visual" id="onboardStepVisual">🧭</div>
+        <h3 id="onboardStepHeading">1. Tell us your mood & company</h3>
+        <p id="onboardStepDesc">Whether solo, with a partner, friends, or young kids — the app adapts walking distance, rest stops, and narrative depth.</p>
+        
+        <div class="onboard-dots-indicator">
+          <span class="onboard-dot active" data-step="1"></span>
+          <span class="onboard-dot" data-step="2"></span>
+          <span class="onboard-dot" data-step="3"></span>
+        </div>
+      </div>
+      <div class="modal-footer flex-between">
+        <button class="btn-text-skip" onclick="app.closeOnboardingModal()">Skip Onboarding</button>
+        <button class="btn-primary-amber" id="onboardNextBtn" onclick="app.nextOnboardStep()">Next Step ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. BADGE UNLOCK CELEBRATION MODAL -->
+  <div class="modal-overlay hidden" id="badgeModal" role="dialog" aria-modal="true">
+    <div class="modal-card badge-celebration-card">
+      <div class="badge-big-icon" id="celebrateIcon">🛡️</div>
+      <h3 id="celebrateTitle">Badge Unlocked: Peshwa Chronicler!</h3>
+      <p id="celebrateDesc">You completed the Shaniwar Wada audio narrative and passed through the historic Lakdi Pul wooden bridge trail.</p>
+      <div class="celebrate-share-box">
+        <span>+150 Exploration XP</span> • <span>Level 3 Pune Urban Historian</span>
+      </div>
+      <button class="btn-primary-teal w-full mt-16" onclick="app.closeBadgeModal()">Awesome!</button>
+    </div>
+  </div>
+
+  <!-- 5. GLOBAL LANGUAGE & FOREIGN TOURIST MODE MODAL -->
+  <div class="modal-overlay hidden" id="languageModal" role="dialog" aria-modal="true">
+    <div class="modal-card lang-modal-card">
+      <div class="modal-header">
+        <span class="modal-badge-teal">🌐 INTERNATIONAL TRAVELER</span>
+        <button class="modal-close-btn" onclick="app.closeLanguageModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <h3 class="modal-title">Select App Language</h3>
+        <p class="modal-desc">Supported native & foreign tourist languages for Pune exploration:</p>
+
+        <div class="lang-grid" role="radiogroup" aria-label="Select App Language">
+          <button type="button" class="lang-card-option active" data-lang="en" onclick="app.setLanguage('en')">
+            <span class="lang-flag">🇬🇧</span>
+            <div class="lang-names">
+              <span class="lang-primary">English</span>
+              <span class="lang-secondary">Global Universal</span>
+            </div>
+          </button>
+          <button type="button" class="lang-card-option" data-lang="mr" onclick="app.setLanguage('mr')">
+            <span class="lang-flag">🚩</span>
+            <div class="lang-names">
+              <span class="lang-primary">मराठी</span>
+              <span class="lang-secondary">Pune Local</span>
+            </div>
+          </button>
+          <button type="button" class="lang-card-option" data-lang="hi" onclick="app.setLanguage('hi')">
+            <span class="lang-flag">🇮🇳</span>
+            <div class="lang-names">
+              <span class="lang-primary">हिंदी</span>
+              <span class="lang-secondary">National</span>
+            </div>
+          </button>
+          <button type="button" class="lang-card-option" data-lang="fr" onclick="app.setLanguage('fr')">
+            <span class="lang-flag">🇫🇷</span>
+            <div class="lang-names">
+              <span class="lang-primary">Français</span>
+              <span class="lang-secondary">French</span>
+            </div>
+          </button>
+          <button type="button" class="lang-card-option" data-lang="de" onclick="app.setLanguage('de')">
+            <span class="lang-flag">🇩🇪</span>
+            <div class="lang-names">
+              <span class="lang-primary">Deutsch</span>
+              <span class="lang-secondary">German</span>
+            </div>
+          </button>
+          <button type="button" class="lang-card-option" data-lang="es" onclick="app.setLanguage('es')">
+            <span class="lang-flag">🇪🇸</span>
+            <div class="lang-names">
+              <span class="lang-primary">Español</span>
+              <span class="lang-secondary">Spanish</span>
+            </div>
+          </button>
+          <button type="button" class="lang-card-option" data-lang="ja" onclick="app.setLanguage('ja')">
+            <span class="lang-flag">🇯🇵</span>
+            <div class="lang-names">
+              <span class="lang-primary">日本語</span>
+              <span class="lang-secondary">Japanese</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Universal Language-Agnostic Feature Tools -->
+        <div class="tourist-tools-card">
+          <div class="tourist-tools-header">
+            <span>🧭 Language-Agnostic Tools for Foreign Tourists</span>
+          </div>
+
+          <!-- Pictorial & Icon Mode Toggle -->
+          <div class="tourist-tool-row">
+            <div class="tool-info">
+              <strong>Universal Pictorial Mode</strong>
+              <span>Shows dietary badges (🟢 Veg/🔴 Non-Veg), visual transit icons & symbols</span>
+            </div>
+            <label class="switch-toggle" aria-label="Toggle Universal Pictorial Mode">
+              <input type="checkbox" id="universalVisualToggle" onchange="app.toggleUniversalVisualMode(this.checked)">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- Foreign Currency Toggle -->
+          <div class="tourist-tool-row mt-12">
+            <div class="tool-info">
+              <strong>Dual Currency Conversion</strong>
+              <span>Displays prices in your preferred currency</span>
+            </div>
+            <div class="currency-btn-group">
+              <button type="button" class="currency-btn active" data-curr="INR" onclick="app.setCurrency('INR')">₹ INR</button>
+              <button type="button" class="currency-btn" data-curr="USD" onclick="app.setCurrency('USD')">$ USD</button>
+              <button type="button" class="currency-btn" data-curr="EUR" onclick="app.setCurrency('EUR')">€ EUR</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pune Audio Survival Kit for Foreign Tourists -->
+        <div class="phrasebook-card mt-12">
+          <span class="phrasebook-title">🎧 Pune Local Phrases (Tap to Hear):</span>
+          <div class="phrase-chips">
+            <button type="button" class="phrase-chip" onclick="app.playPhoneticPhrase('namaskar', 'Namaskar! (Hello / Welcome)')">
+              <span>🙏 Namaskar (Hello)</span>
+            </button>
+            <button type="button" class="phrase-chip" onclick="app.playPhoneticPhrase('kiti_zale', 'Kiti zale? (How much is this?)')">
+              <span>💰 Kiti zale? (How much?)</span>
+            </button>
+            <button type="button" class="phrase-chip" onclick="app.playPhoneticPhrase('shakahari', 'Shakahari jevan (Pure vegetarian food)')">
+              <span>🥗 Shakahari (Pure Veg)</span>
+            </button>
+            <button type="button" class="phrase-chip" onclick="app.playPhoneticPhrase('darwaza', 'Darwaza kuthe aahe? (Where is the gate?)')">
+              <span>🚪 Darwaza? (Fort Gate)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-primary-teal w-full" onclick="app.closeLanguageModal()">Save & Apply Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION MESSAGE -->
+  <div class="app-toast hidden" id="appToast" role="alert" aria-live="assertive">
+    <span id="toastMessage">Notification message</span>
+  </div>
+
+  <script src="app.js?v=20261012_v3\"></script>
+</body>
+</html>
