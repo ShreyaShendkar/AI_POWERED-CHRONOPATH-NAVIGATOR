@@ -16,9 +16,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 warnings.filterwarnings('ignore')
 
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
 # Matplotlib setup - ASCII only, tight_layout, dpi=150, no plt.show()
 plt.style.use('seaborn-v0_8-whitegrid')
-OUT_DIR = 'outputs/route_recommender/'
+OUT_DIR = os.path.join(base_dir, 'outputs', 'route_recommender')
 os.makedirs(OUT_DIR, exist_ok=True)
 
 
@@ -31,9 +33,9 @@ def main():
     # STEP 1 - LOAD DATA
     # -------------------------------------------------------------
     print("\n--- STEP 1: LOAD & MERGE DATA ---")
-    sessions = pd.read_csv('sessions.csv')
-    users = pd.read_csv('users.csv')
-    personas = pd.read_csv('outputs/clustering/user_personas.csv')
+    sessions = pd.read_csv(os.path.join(base_dir, 'sessions.csv'))
+    users = pd.read_csv(os.path.join(base_dir, 'users.csv'))
+    personas = pd.read_csv(os.path.join(base_dir, 'outputs', 'clustering', 'user_personas.csv'))
 
     print(f"Loaded sessions: {sessions.shape}")
     print(f"Loaded users: {users.shape}")

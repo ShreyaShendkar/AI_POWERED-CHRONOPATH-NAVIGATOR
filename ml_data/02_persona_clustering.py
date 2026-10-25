@@ -20,13 +20,17 @@ warnings.filterwarnings('ignore')
 plt.style.use('seaborn-v0_8-whitegrid')
 CUSTOM_PALETTE = ['#0D9488','#F59E0B','#6366F1','#EF4444','#10B981']
 
+base_dir = os.path.dirname(os.path.abspath(__file__))
+out_dir = os.path.join(base_dir, 'outputs', 'clustering')
+
+
 def main():
-    os.makedirs('outputs/clustering/', exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
     
     print("=== STEP 1: LOAD DATA ===")
-    sessions = pd.read_csv('sessions.csv')
-    stops = pd.read_csv('stops.csv')
-    users = pd.read_csv('users.csv')
+    sessions = pd.read_csv(os.path.join(base_dir, 'sessions.csv'))
+    stops = pd.read_csv(os.path.join(base_dir, 'stops.csv'))
+    users = pd.read_csv(os.path.join(base_dir, 'users.csv'))
     
     print(f"Sessions shape: {sessions.shape}")
     print(f"Stops shape: {stops.shape}")
@@ -109,7 +113,7 @@ def main():
     
     plt.title('Elbow Method: Inertia vs Silhouette Score')
     fig.tight_layout()
-    plt.savefig('outputs/clustering/clustering_elbow_method.png', dpi=150)
+    plt.savefig(os.path.join(out_dir, 'clustering_elbow_method.png'), dpi=150)
     plt.close()
     
     print("\n=== STEP 5: TRAIN FINAL K-MEANS (K=5) ===")
@@ -179,7 +183,7 @@ def main():
     plt.ylabel('PCA Component 2')
     plt.legend(title='Persona')
     plt.tight_layout()
-    plt.savefig('outputs/clustering/clustering_pca_2d.png', dpi=150)
+    plt.savefig(os.path.join(out_dir, 'clustering_pca_2d.png'), dpi=150)
     plt.close()
     
     print("\n=== STEP 8: CLUSTER PROFILE HEATMAP ===")
@@ -190,7 +194,7 @@ def main():
     sns.heatmap(profile_heatmap_data, annot=True, fmt='.2f', cmap='YlOrRd')
     plt.title('Cluster Profiles Heatmap (Feature Means)')
     plt.tight_layout()
-    plt.savefig('outputs/clustering/clustering_profile_heatmap.png', dpi=150)
+    plt.savefig(os.path.join(out_dir, 'clustering_profile_heatmap.png'), dpi=150)
     plt.close()
     
     print("\n=== STEP 9: PERSONA DISTRIBUTION BAR CHART ===")
@@ -202,11 +206,11 @@ def main():
     plt.ylabel('Number of Users')
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.savefig('outputs/clustering/clustering_persona_distribution.png', dpi=150)
+    plt.savefig(os.path.join(out_dir, 'clustering_persona_distribution.png'), dpi=150)
     plt.close()
     
     print("\n=== STEP 10: SAVE RESULTS ===")
-    out_file = 'outputs/clustering/user_personas.csv'
+    out_file = os.path.join(out_dir, 'user_personas.csv')
     features_df.to_csv(out_file, index=False)
     print("First 10 rows of final data:")
     print(features_df.head(10))

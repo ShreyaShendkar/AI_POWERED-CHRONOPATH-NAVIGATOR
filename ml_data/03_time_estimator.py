@@ -21,12 +21,13 @@ except ImportError:
 
 warnings.filterwarnings('ignore')
 
-out_dir = 'outputs/time_estimator/'
+base_dir = os.path.dirname(os.path.abspath(__file__))
+out_dir = os.path.join(base_dir, 'outputs', 'time_estimator')
 os.makedirs(out_dir, exist_ok=True)
 
 print("=== STEP 1: LOAD DATA ===")
-sessions = pd.read_csv('sessions.csv')
-users = pd.read_csv('users.csv')
+sessions = pd.read_csv(os.path.join(base_dir, 'sessions.csv'))
+users = pd.read_csv(os.path.join(base_dir, 'users.csv'))
 # Use suffixes so sessions columns always win on overlap (group_type, budget_tier, tourist_type exist in both)
 merged = sessions.merge(users, on='user_id', how='left', suffixes=('', '_usr'))
 # Drop the _usr duplicate columns

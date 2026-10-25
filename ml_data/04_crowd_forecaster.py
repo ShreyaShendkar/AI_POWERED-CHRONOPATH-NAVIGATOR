@@ -21,7 +21,7 @@ from sklearn.metrics import classification_report, confusion_matrix, ConfusionMa
 
 def main():
     # Set output directory
-    script_dir = os.path.dirname(os.path.abspath(__file__)) if '__file__' in locals() else os.getcwd()
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     out_dir = os.path.join(script_dir, 'outputs', 'crowd_forecaster')
     os.makedirs(out_dir, exist_ok=True)
 
@@ -29,7 +29,7 @@ def main():
     # STEP 1 - LOAD DATA
     # ==========================================
     print("=== STEP 1 - LOAD DATA ===")
-    data_path = os.path.join(script_dir, 'stops.csv') if os.path.exists(os.path.join(script_dir, 'stops.csv')) else 'stops.csv'
+    data_path = os.path.join(script_dir, 'stops.csv')
     df = pd.read_csv(data_path)
     print(f"Loaded stops dataset shape: {df.shape}")
 
